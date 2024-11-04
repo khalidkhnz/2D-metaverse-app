@@ -3,6 +3,7 @@ package authService
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/khalidkhnz/2D-metaverse-app/backend/lib"
 	"github.com/khalidkhnz/2D-metaverse-app/backend/schema"
@@ -23,6 +24,7 @@ func CreateAccount(authBody schema.AuthSchema) (*schema.AuthSchema, error) {
 	}
 	// CHANGED WITH HASHED PASSWORD
 	authBody.Password = string(hashedPassword)
+	authBody.Email = strings.ToLower(string(authBody.Email))
 
 	// SAVING TO DB
 	result, err := authCollection.InsertOne(context.TODO(), authBody)
@@ -49,7 +51,7 @@ func CreateAccount(authBody schema.AuthSchema) (*schema.AuthSchema, error) {
 func IsAccountAlreadyExist(authBody schema.AuthSchema) (bool,error) {
 	collection := lib.Collections("auths")
 	var auth schema.AuthSchema
-	err := collection.FindOne(context.TODO(), bson.M{"email": authBody.Email}).Decode(&auth)
+	err := collection.FindOne(context.TODO(), bson.M{"email": strings.ToLower(string(authBody.Email))}).Decode(&auth)
 	if err!=nil {
 		return false,fmt.Errorf("error %v",err.Error())
 	}
@@ -67,7 +69,7 @@ func Login(authBody types.LoginBody) (bool,schema.AuthSchema,error) {
 	var auth schema.AuthSchema
 
 	// FIND DOC
-	err := collection.FindOne(context.TODO(), bson.M{"email": authBody.Email}).Decode(&auth)
+	err := collection.FindOne(context.TODO(), bson.M{"email": strings.ToLower(string(authBody.Email))}).Decode(&auth)
 	if err!=nil {
 		return false,schema.AuthSchema{},fmt.Errorf("error %v",err.Error())
 	}
