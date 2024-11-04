@@ -76,6 +76,7 @@ func (s *APIServer) Run() {
 
 	// AUTH ROUTER
 	s.authRouter(apiRouter)
+	s.organizationRouter(apiRouter)
 
 	// NOT FOUND HANDLE
 	router.HandleFunc("/{path:.*}", func(w http.ResponseWriter, r *http.Request) {
@@ -96,4 +97,15 @@ func (s *APIServer) authRouter(router *mux.Router) {
 	router.HandleFunc("/auth/login", makeHTTPHandleFunc(authControllers.HandleLogin)).Methods("POST")
 	router.Handle("/auth/current-user", middlewares.AuthMiddleware(makeHTTPHandleFunc(authControllers.HandleCurrentUser))).Methods("GET")
 }
+
+
+// func (s *APIServer) organizationRouter(router *mux.Router) {
+// 	router.HandleFunc("/org/signup", makeHTTPHandleFunc(authControllers.HandleCreateAccount)).Methods("POST")
+// 	router.HandleFunc("/org/get/{id}", makeHTTPHandleFunc(authControllers.HandleGetAccount)).Methods("GET")
+// 	router.HandleFunc("/org/login", makeHTTPHandleFunc(authControllers.HandleLogin)).Methods("POST")
+// 	router.Handle("/org/current-user", middlewares.AuthMiddleware(makeHTTPHandleFunc(authControllers.HandleCurrentUser))).Methods("GET")
+// }
+
+
+
 

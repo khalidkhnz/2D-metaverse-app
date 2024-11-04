@@ -11,24 +11,23 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
 )
-
-func CreateAccount(authBody schema.AuthSchema) (schema.AuthSchema, error) {
+func CreateAccount(authBody schema.AuthSchema) (*schema.AuthSchema, error) {
 	// GETTING ALL COLLECTIONS
-	collection := lib.Collections("auths")
+	authCollection := lib.Collections("auths")
 	profileCollection := lib.Collections("profiles")
 
 	// HASING PASSWORD BEFORE SAVE
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(authBody.Password), 12)
 	if err != nil {
-		return schema.AuthSchema{}, fmt.Errorf("could not hash password: %v", err)
+		return nil, fmt.Errorf("could not hash password: %v", err)
 	}
 	// CHANGED WITH HASHED PASSWORD
 	authBody.Password = string(hashedPassword)
 
 	// SAVING TO DB
-	result, err := collection.InsertOne(context.TODO(), authBody)
+	result, err := authCollection.InsertOne(context.TODO(), authBody)
 	if err != nil {
-		return schema.AuthSchema{}, fmt.Errorf("could not create auth: %v", err)
+		return nil, fmt.Errorf("could not create auth: %v", err)
 	}
 
 	// GETTING AUTH ID
@@ -40,10 +39,10 @@ func CreateAccount(authBody schema.AuthSchema) (schema.AuthSchema, error) {
 	// INSERTING PROFILE
 	_, err = profileCollection.InsertOne(context.TODO(), profile)
 	if err != nil {
-		return schema.AuthSchema{}, fmt.Errorf("could not create profile: %v", err)
+		return nil, fmt.Errorf("could not create profile: %v", err)
 	}
 
-	return authBody, nil
+	return &authBody, nil
 }
 
 
