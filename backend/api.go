@@ -71,10 +71,15 @@ func (s *APIServer) Run() {
 	router := mux.NewRouter()
 
 	router.Use(middlewares.LoggingMiddleware)
+	
+	router.Handle("/",http.FileServer(http.Dir("./views")))
 
 	apiRouter := router.PathPrefix("/api/v1").Subrouter()
+	
+	router.HandleFunc("/ws", Handler).Methods("GET")
 
 	// AUTH ROUTER
+	s.publicRouter(apiRouter)
 	s.authRouter(apiRouter)
 	s.organizationRouter(apiRouter)
 
@@ -91,20 +96,38 @@ func (s *APIServer) Run() {
 }
 
 
+func (s *APIServer) publicRouter(router *mux.Router) {
+	router.HandleFunc("/endpoints", func(w http.ResponseWriter, r *http.Request) {
+		endpoints := map[string]map[string][]string{
+			"auth": {
+				"POST": {"signup", "login"},
+				"GET":  {"current-user", "get/{id}"},
+			},
+			"org": {
+				"GET": {"current-user"},
+			},
+			"ws": {
+				"GET": {"ws"},
+			},
+		}
+		lib.WriteJSON(w, http.StatusOK, endpoints)
+	}).Methods("GET")
+}
+
+
 func (s *APIServer) authRouter(router *mux.Router) {
 	router.HandleFunc("/auth/signup", makeHTTPHandleFunc(authControllers.HandleCreateAccount)).Methods("POST")
 	router.HandleFunc("/auth/get/{id}", makeHTTPHandleFunc(authControllers.HandleGetAccount)).Methods("GET")
 	router.HandleFunc("/auth/login", makeHTTPHandleFunc(authControllers.HandleLogin)).Methods("POST")
+	
+	// REQUIRES TOKEN
 	router.Handle("/auth/current-user", middlewares.AuthMiddleware(makeHTTPHandleFunc(authControllers.HandleCurrentUser))).Methods("GET")
 }
 
 
-// func (s *APIServer) organizationRouter(router *mux.Router) {
-// 	router.HandleFunc("/org/signup", makeHTTPHandleFunc(authControllers.HandleCreateAccount)).Methods("POST")
-// 	router.HandleFunc("/org/get/{id}", makeHTTPHandleFunc(authControllers.HandleGetAccount)).Methods("GET")
-// 	router.HandleFunc("/org/login", makeHTTPHandleFunc(authControllers.HandleLogin)).Methods("POST")
-// 	router.Handle("/org/current-user", middlewares.AuthMiddleware(makeHTTPHandleFunc(authControllers.HandleCurrentUser))).Methods("GET")
-// }
+func (s *APIServer) organizationRouter(router *mux.Router) {
+	router.Handle("/org/current-user", middlewares.AuthMiddleware(makeHTTPHandleFunc(authControllers.HandleCurrentUser))).Methods("GET")
+}
 
 
 

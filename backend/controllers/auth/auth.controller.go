@@ -18,6 +18,7 @@ import (
 
 
 func HandleGetAccount(w http.ResponseWriter, r *http.Request) error {
+	
 	authID := mux.Vars(r)["id"]
 	if authID == "" {
 		return fmt.Errorf("missing required parameter: id")

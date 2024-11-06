@@ -1,0 +1,248 @@
+                   <!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>API Documentation</title>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+      crossorigin="anonymous"
+    />
+    <link
+      href="https://unpkg.com/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      .log-window {
+        height: 200px;
+        overflow: auto;
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-top: 10px;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px; /* Added margin bottom for better spacing */
+      }
+      .api-tester-response {
+        padding: 10px;
+        margin-top: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px; /* Added margin bottom for better spacing */
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="jumbotron">
+        <h1 class="display-4 text-red-600">API Documentation</h1>
+        <p class="lead">Explore our API endpoints.</p>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <h2>Endpoints</h2>
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Category</th>
+                <th>Method</th>
+                <th>Endpoint</th>
+              </tr>
+            </thead>
+            <tbody id="endpoints-table-body">
+              <!-- Endpoints will be dynamically loaded here -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <h2>API Tester</h2>
+          <form id="api-tester-form">
+            <div class="form-group">
+              <label for="method-select">Method</label>
+              <select class="form-control" id="method-select">
+                <option value="GET">GET</option>
+                <option value="POST">POST</option>
+                <option value="PUT">PUT</option>
+                <option value="DELETE">DELETE</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="endpoint-input">Endpoint</label>
+              <input
+                type="text"
+                class="form-control"
+                id="endpoint-input"
+                placeholder="/api/v1/auth/signup"
+              />
+            </div>
+            <div class="form-group">
+              <label for="body-input">Body (JSON)</label>
+              <textarea
+                class="form-control"
+                id="body-input"
+                rows="3"
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label for="headers-input">Headers (JSON)</label>
+              <textarea
+                class="form-control"
+                id="headers-input"
+                rows="3"
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label for="token-input">Authorization Token</label>
+              <input
+                type="text"
+                class="form-control"
+                id="token-input"
+                placeholder="Bearer your_token_here"
+              />
+            </div>
+            <button type="submit" class="btn btn-primary">Send</button>
+          </form>
+          <div id="api-tester-response" class="api-tester-response"></div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <h2>WebSocket Connection</h2>
+          <div id="websocket-status"></div>
+          <button id="connect-ws" class="btn btn-success">
+            Connect to WebSocket
+          </button>
+          <button id="disconnect-ws" class="btn btn-danger" disabled>
+            Disconnect from WebSocket
+          </button>
+          <div id="ws-messages" class="log-window"></div>
+          <div class="form-group">
+            <label for="ws-message-input">Send Message</label>
+            <input
+              type="text"
+              class="form-control"
+              id="ws-message-input"
+              placeholder="Type your message here..."
+            />
+            <button id="send-ws-message" class="btn btn-primary">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        fetch("/api/v1/endpoints")
+          .then((response) => response.json())
+          .then((data) => {
+            const tableBody = document.getElementById("endpoints-table-body");
+            Object.entries(data).forEach(([category, methods]) => {
+              Object.entries(methods).forEach(([method, endpoints]) => {
+                endpoints.forEach((endpoint) => {
+                  const row = document.createElement("tr");
+                  row.innerHTML = `
+                    <td>${category}</td>
+                    <td>${method}</td>
+                    <td>/api/v1/${category}/${endpoint}</td>
+                  `;
+                  tableBody.appendChild(row);
+                });
+              });
+            });
+          })
+          .catch((error) => console.error("Error fetching endpoints:", error));
+
+        document
+          .getElementById("api-tester-form")
+          .addEventListener("submit", function (event) {
+            event.preventDefault();
+            const method = document.getElementById("method-select").value;
+            const endpoint = document.getElementById("endpoint-input").value;
+            const body = document.getElementById("body-input").value;
+            const headersInput = document.getElementById("headers-input").value;
+            const token = document.getElementById("token-input").value;
+            const headers = headersInput ? JSON.parse(headersInput) : {};
+
+            // Adjusting the request based on the method to avoid sending a body with GET/HEAD methods
+            const requestBody =
+              method === "GET" || method === "HEAD" ? null : body;
+            const requestHeaders = {
+              "Content-Type": "application/json",
+              Authorization: token,
+              ...headers,
+            };
+
+            fetch(endpoint, {
+              method: method,
+              headers: requestHeaders,
+              body: requestBody,
+            })
+              .then((response) => response.json())
+              .then((data) => {
+                document.getElementById("api-tester-response").innerHTML = `
+              <pre><code>${JSON.stringify(data, null, 2)}</code></pre>
+            `;
+              })
+              .catch((error) => {
+                console.error("Error sending request:", error);
+                document.getElementById("api-tester-response").innerHTML = `
+              <pre><code>Error: ${error.message}</code></pre>
+            `;
+              });
+          });
+
+        let socket = null;
+
+        document
+          .getElementById("connect-ws")
+          .addEventListener("click", function () {
+            socket = new WebSocket("ws://localhost:4000/ws");
+            socket.onopen = function (event) {
+              document.getElementById("websocket-status").innerHTML =
+                "Connected to WebSocket";
+              document.getElementById("connect-ws").disabled = true;
+              document.getElementById("disconnect-ws").disabled = false;
+            };
+            socket.onmessage = function (event) {
+              console.log(`WebSocket message received: ${event.data}`);
+              document.getElementById(
+                "ws-messages"
+              ).innerHTML += `<p>${event.data}</p>`;
+            };
+            socket.onerror = function (error) {
+              console.log("WebSocket error:", error);
+            };
+          });
+
+        document
+          .getElementById("disconnect-ws")
+          .addEventListener("click", function () {
+            if (socket) {
+              socket.close();
+              document.getElementById("websocket-status").innerHTML =
+                "Disconnected from WebSocket";
+              document.getElementById("connect-ws").disabled = false;
+              document.getElementById("disconnect-ws").disabled = true;
+            }
+          });
+
+        document
+          .getElementById("send-ws-message")
+          .addEventListener("click", function () {
+            if (socket) {
+              const message = document.getElementById("ws-message-input").value;
+              socket.send(message);
+              console.log(`Message sent: ${message}`);
+              document.getElementById(
+                "ws-messages"
+              ).innerHTML += `<p>Client: ${message}</p>`;
+            }
+          });
+      });
+    </script>
+  </body>
+</html>
