@@ -7,6 +7,7 @@ import (
 	"net/url"
 
 	"github.com/gorilla/mux"
+	"github.com/khalidkhnz/2D-metaverse-app/backend/lib"
 )
 
 func (s *APIServer) FileServer(folderPath string,serveUrl string, router *mux.Router) {
@@ -25,6 +26,7 @@ func (s *APIServer) ProxyServer(proxyURL string, router *mux.Router) {
 		r.Host = url.Host
 		r.URL.Scheme = url.Scheme
 		r.URL.Host = url.Host
+		r.Header.Set("X-Forwarded-Host", lib.Base)
 	}
 
 	router.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

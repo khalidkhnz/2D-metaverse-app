@@ -27,6 +27,7 @@ func (s *APIServer) OrganizationRouter(router *mux.Router) {
 }
 
 func (s *APIServer) PublicRouter(router *mux.Router) {
+
 	router.HandleFunc("/endpoints", func(w http.ResponseWriter, r *http.Request) {
 		endpoints := map[string]map[string][]string{
 			"auth": {

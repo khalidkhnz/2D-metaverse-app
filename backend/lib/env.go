@@ -10,7 +10,9 @@ var Port = ":4000"
 
 var ApiPrefix = "/api/v1"
 
-var URL = "http://localhost:4000"
+var Base = "localhost:4000"
+
+var URL = "http://" + Base
 
 var FrontEndProxyURL = "http://localhost:3000"
 
