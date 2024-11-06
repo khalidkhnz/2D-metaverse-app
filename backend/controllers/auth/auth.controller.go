@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/gorilla/mux"
 	"github.com/khalidkhnz/2D-metaverse-app/backend/lib"
@@ -49,6 +50,8 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) error {
 	if err := json.NewDecoder(r.Body).Decode(&loginCread); err != nil {
 		return fmt.Errorf("invalid request payload: %v", err)
 	}
+
+	loginCread.Email = strings.ToLower(string(loginCread.Email))
 
 	isMatched,data,err := authService.Login(loginCread)
 
