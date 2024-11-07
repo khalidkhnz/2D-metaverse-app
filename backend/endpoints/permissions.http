@@ -1,0 +1,90 @@
+### CREATE PERMISSION
+POST http://localhost:4000/api/v1/permission/create-permission HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzE1NzU1NjcsInVzZXJJRCI6IjY3MmM4NGFiODMwYjVkZTVhZTA3NWE2OSJ9.dLm2c5rYJKhdFmB4uxFCW94IBKU7cNH3EdtWhh3xCxc
+Content-Type: application/json
+
+{
+    "name": "CHANGE_PROFILE_INFO",
+    "description": "CHANGE_PROFILE_INFO permission allows user to change his/her profile information"
+}
+
+
+### UPDATE PERMISSION
+PUT http://localhost:4000/api/v1/permission/update-permission?permissionId=123 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzE1NzU1NjcsInVzZXJJRCI6IjY3MmM4NGFiODMwYjVkZTVhZTA3NWE2OSJ9.dLm2c5rYJKhdFmB4uxFCW94IBKU7cNH3EdtWhh3xCxc
+Content-Type: application/json
+
+{
+    "name": "USER",
+    "description": "USER is a basic permission for common user"
+}
+
+
+### DELETE PERMISSION
+DELETE http://localhost:4000/api/v1/permission/delete-permission?permissionId=123 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzE1NzU1NjcsInVzZXJJRCI6IjY3MmM4NGFiODMwYjVkZTVhZTA3NWE2OSJ9.dLm2c5rYJKhdFmB4uxFCW94IBKU7cNH3EdtWhh3xCxc
+Content-Type: application/json
+
+
+### GET PERMISSION
+GET http://localhost:4000/api/v1/permission/get-all-permission HTTP/1.1
+Content-Type: application/json
+
+
+### GET PERMISSIONS
+GET http://localhost:4000/api/v1/permission/get-permission HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzE1NzU1NjcsInVzZXJJRCI6IjY3MmM4NGFiODMwYjVkZTVhZTA3NWE2OSJ9.dLm2c5rYJKhdFmB4uxFCW94IBKU7cNH3EdtWhh3xCxc
+Content-Type: application/json
+
+{
+    "permissionIds":["672c8e9a52eaa352d3b9535d","672c902c6e2e8f98e1729c27"]
+}
+
+##############
+# [
+#     {
+#       "_id": "672c8e9a52eaa352d3b9535d",
+#       "name": "ADD_TO_SPACE",
+#       "description": "ADD_TO_SPACE gives user permissions to add users to the space"
+#     },
+#     {
+#       "_id": "672c902c6e2e8f98e1729c27",
+#       "name": "SPACE_CREATOR",
+#       "description": "SPACE_CREATOR permission allows user to do anything in space"
+#     },
+#     {
+#       "_id": "672c90676e2e8f98e1729c28",
+#       "name": "REMOVE_FROM_SPACE",
+#       "description": "REMOVE_FROM_SPACE permission allows user to remove anyone from the space except OWNER"
+#     },
+#     {
+#       "_id": "672c90a16e2e8f98e1729c29",
+#       "name": "EDIT_SPACE",
+#       "description": "EDIT_SPACE permission allows user to edit space"
+#     },
+#     {
+#       "_id": "672c90c46e2e8f98e1729c2a",
+#       "name": "CREATE_ANOTHER_SPACE",
+#       "description": "CREATE_ANOTHER_SPACE permission allows user to create another space"
+#     },
+#     {
+#       "_id": "672c90ec6e2e8f98e1729c2b",
+#       "name": "SET_ACTIVE_SPACE",
+#       "description": "SET_ACTIVE_SPACE permission allows user to set active space"
+#     },
+#     {
+#       "_id": "672c91366e2e8f98e1729c2c",
+#       "name": "CALL_ANYONE",
+#       "description": "CALL_ANYONE permission allows user to call anyone in the space"
+#     },
+#     {
+#       "_id": "672c917f6e2e8f98e1729c2d",
+#       "name": "ENCRYPTED_COMMUNICATION",
+#       "description": "ENCRYPTED_COMMUNICATION permission allows user to have end-to-end encryption in communication"
+#     },
+#     {
+#       "_id": "672c91c16e2e8f98e1729c2e",
+#       "name": "CHANGE_PROFILE_INFO",
+#       "description": "CHANGE_PROFILE_INFO permission allows user to change his/her profile information"
+#     }
+#   ]

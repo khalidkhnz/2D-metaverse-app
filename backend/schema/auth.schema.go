@@ -13,8 +13,17 @@ type AuthSchema struct {
 	Password  	string             		`bson:"password" json:"password"`
 	RoleId  	primitive.ObjectID      `bson:"roleId" json:"roleId"`
 	Permissions []primitive.ObjectID	`bson:"permissions" json:"permissions"`
-	AvatarId  	primitive.ObjectID      `bson:"avatarId" json:"avatarId"`
 }
+
+type AuthSchemaAggrigated struct {
+	ID        	primitive.ObjectID 		`bson:"_id,omitempty" json:"_id"`
+	FullName 	string              	`bson:"fullName" json:"fullName"`
+	Email     	string             		`bson:"email" json:"email"`
+	Password  	string             		`bson:"password" json:"password"`
+	RoleId  	RoleSchema      		`bson:"role" json:"role"`
+	Permissions []PermissionSchema		`bson:"permissions" json:"permissions"`
+}
+
 
 func (a *AuthSchema) Validate() error {
 	if a.FullName == "" {

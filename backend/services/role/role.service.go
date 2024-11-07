@@ -16,6 +16,16 @@ func CreateRole(ctx context.Context, role *schema.RoleSchema) (*mongo.InsertOneR
 	if err := role.Validate(); err != nil {
 		return nil, err
 	}
+
+	// Check if role name already exists
+	var existingRoles schema.RoleSchema
+	err := lib.Collections("roles").FindOne(ctx, bson.M{"name": role.Name}).Decode(&existingRoles)
+	if err == nil {
+		return nil, fmt.Errorf("role with name %s already exists", role.Name)
+	} else if err != mongo.ErrNoDocuments {
+		return nil, err
+	}
+
 	return lib.Collections("roles").InsertOne(ctx, role)
 }
 
