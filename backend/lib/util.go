@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/khalidkhnz/2D-metaverse-app/backend/types"
 )
 
 func WriteJSON(w http.ResponseWriter, status int, v any) error {
@@ -27,3 +28,12 @@ func GenerateJWTToken(userID string) (string, error) {
 	return token.SignedString(JwtSecret)
 }
 
+
+func UserInContext(w http.ResponseWriter, r *http.Request) (*types.FullProfile) {
+	user, ok := r.Context().Value("user").(types.FullProfile)
+	if !ok {
+		WriteJSON(w, http.StatusUnauthorized, "User not found in context")
+		return &types.FullProfile{}
+	}
+	return &user
+}
