@@ -38,6 +38,30 @@ func GetRoleByID(ctx context.Context, id primitive.ObjectID) (*schema.RoleSchema
 	return &role, nil
 }
 
+func GetRoleByName(ctx context.Context, name string) (*schema.RoleSchema, error) {
+	var role schema.RoleSchema
+	err := lib.Collections("roles").FindOne(ctx, bson.M{"name": name}).Decode(&role)
+	if err != nil {
+		return nil, err
+	}
+	return &role, nil
+}
+
+func GetRolesByNames(ctx context.Context, names []string) (*[]schema.RoleSchema,error) {
+
+	var roles []schema.RoleSchema
+	rolesCollection := lib.Collections("roles")
+	cursor, err := rolesCollection.Find(context.TODO(), bson.M{"name": bson.M{"$in": names}})
+	if err != nil {
+		return &[]schema.RoleSchema{}, fmt.Errorf("could not find roles: %v", err)
+	}
+	if err = cursor.All(context.TODO(), &roles); err != nil {
+		return &[]schema.RoleSchema{}, fmt.Errorf("could not decode roles: %v", err)
+	}
+
+	return &roles, nil
+}
+
 
 func GetAllRoles(ctx context.Context) ([]schema.RoleSchema, error) {
 	var roles []schema.RoleSchema
