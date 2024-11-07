@@ -48,6 +48,20 @@ func GetPermissionByName(ctx context.Context, name string) (*schema.PermissionSc
 }
 
 
+func GetPermissionsByNames(ctx context.Context, names []string) (*[]schema.PermissionSchema,error) {
+	var permissions []schema.PermissionSchema
+	permissionsCollection := lib.Collections("permissions")
+	cursor, err := permissionsCollection.Find(context.TODO(), bson.M{"name": bson.M{"$in": names}})
+	if err != nil {
+		return &[]schema.PermissionSchema{}, fmt.Errorf("could not find permissions: %v", err)
+	}
+	if err = cursor.All(context.TODO(), &permissions); err != nil {
+		return &[]schema.PermissionSchema{}, fmt.Errorf("could not decode permissions: %v", err)
+	}
+	return &permissions, nil
+}
+
+
 func GetAllPermissions(ctx context.Context) ([]schema.PermissionSchema, error) {
 	var permissions []schema.PermissionSchema
 	cursor, err := lib.Collections("permissions").Find(ctx, bson.M{})

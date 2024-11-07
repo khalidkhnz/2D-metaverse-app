@@ -9,7 +9,6 @@ import (
 	"github.com/khalidkhnz/2D-metaverse-app/backend/types"
 )
 
-type roles []string
 
 func RoleCheckerMiddleware(next http.Handler, roles []string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
