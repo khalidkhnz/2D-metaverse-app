@@ -8,7 +8,7 @@ import (
 
 type AuthSchema struct {
 	ID        primitive.ObjectID `bson:"_id,omitempty" json:"id"`
-	FullName string             `bson:"firstName" json:"fullName"`
+	FullName string              `bson:"firstName" json:"fullName"`
 	Email     string             `bson:"email" json:"email"`
 	Password  string             `bson:"password" json:"password"`
 }

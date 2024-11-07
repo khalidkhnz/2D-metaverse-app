@@ -136,16 +136,14 @@ func HandleDeleteAccount(w http.ResponseWriter, r *http.Request) error {
 
 func HandleCurrentUser(w http.ResponseWriter, r *http.Request) error {
 	// Retrieve the user data from the context
-	user, ok := r.Context().Value("user").(schema.AuthSchema)
+	user, ok := r.Context().Value("user").(types.FullProfile)
 	if !ok {
 		http.Error(w, "User not found in context", http.StatusUnauthorized)
 		return nil
 	}
 
 	// Respond with the user data
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	return json.NewEncoder(w).Encode(map[string]any{
+	return lib.WriteJSON(w,http.StatusOK,map[string]any{
 		"success": true,
 		"data":    user,
 	})

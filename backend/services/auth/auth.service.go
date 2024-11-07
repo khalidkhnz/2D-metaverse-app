@@ -84,7 +84,7 @@ func Login(authBody types.LoginBody) (bool,schema.AuthSchema,error) {
 }
 
 
-func GetUserByUserId(userID primitive.ObjectID) (schema.AuthSchema, error) {
+func GetUserByUserId(userID primitive.ObjectID) (*schema.AuthSchema, error) {
 	// Get the "auths" collection
 	collection := lib.Collections("auths")
 	var auth schema.AuthSchema
@@ -92,8 +92,8 @@ func GetUserByUserId(userID primitive.ObjectID) (schema.AuthSchema, error) {
 	// Query the database for a user with the matching userID
 	err := collection.FindOne(context.TODO(), bson.M{"_id": userID}).Decode(&auth)
 	if err != nil {
-		return schema.AuthSchema{}, fmt.Errorf("could not find user: %v", err)
+		return &schema.AuthSchema{}, fmt.Errorf("could not find user: %v", err)
 	}
 
-	return auth, nil
+	return &auth, nil
 }
