@@ -82,6 +82,8 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) error {
 
 
 func HandleCreateAccount(w http.ResponseWriter, r *http.Request) error {
+	mode := r.URL.Query().Get("mode")
+	
 	var auth schema.AuthSchema
 	if err := json.NewDecoder(r.Body).Decode(&auth); err != nil {
 		return fmt.Errorf("invalid request payload: %v", err)
@@ -97,7 +99,7 @@ func HandleCreateAccount(w http.ResponseWriter, r *http.Request) error {
 		return fmt.Errorf("account already exist")
 	}
 
-	_, err := authService.CreateAccount(auth)
+	_, err := authService.CreateAccount(auth,mode=="CREATOR")
 	if err!=nil {
 		return err
 	}

@@ -7,12 +7,15 @@ import (
 
 	"github.com/khalidkhnz/2D-metaverse-app/backend/lib"
 	"github.com/khalidkhnz/2D-metaverse-app/backend/schema"
+	permissionService "github.com/khalidkhnz/2D-metaverse-app/backend/services/permission"
 	"github.com/khalidkhnz/2D-metaverse-app/backend/types"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
 )
-func CreateAccount(authBody schema.AuthSchema) (*schema.AuthSchema, error) {
+
+
+func CreateAccount(authBody schema.AuthSchema,spaceCreator bool) (*schema.AuthSchema, error) {
 	// GETTING ALL COLLECTIONS
 	authCollection := lib.Collections("auths")
 	profileCollection := lib.Collections("profiles")
@@ -22,9 +25,25 @@ func CreateAccount(authBody schema.AuthSchema) (*schema.AuthSchema, error) {
 	if err != nil {
 		return nil, fmt.Errorf("could not hash password: %v", err)
 	}
+
+
 	// CHANGED WITH HASHED PASSWORD
 	authBody.Password = string(hashedPassword)
 	authBody.Email = strings.ToLower(string(authBody.Email))
+	if authBody.Permissions == nil {
+		authBody.Permissions = []primitive.ObjectID{}
+	}
+	
+	// GET PERMISSIONS 
+	if spaceCreator {
+		creatorPermission,err := permissionService.GetPermissionByName(context.TODO(),"SPACE_CREATOR")
+		if err!=nil {
+			return &authBody ,fmt.Errorf(err.Error())
+		}
+		authBody.Permissions = []primitive.ObjectID{
+			creatorPermission.ID,	
+		}
+	}
 
 	// SAVING TO DB
 	result, err := authCollection.InsertOne(context.TODO(), authBody)
@@ -96,4 +115,57 @@ func GetUserByUserId(userID primitive.ObjectID) (*schema.AuthSchema, error) {
 	}
 
 	return &auth, nil
+}
+
+
+func GetPopulatedUserByUserId(userID primitive.ObjectID) (*types.AuthSchemaPopulated, error) {
+	// Get the "auths" collection
+	collection := lib.Collections("auths")
+	var auth schema.AuthSchema
+
+	// Query the database for a user with the matching userID
+	err := collection.FindOne(context.TODO(), bson.M{"_id": userID}).Decode(&auth)
+	if err != nil {
+		return &types.AuthSchemaPopulated{}, fmt.Errorf("could not find user: %v", err)
+	}
+
+	// Populate Role
+	var role schema.RoleSchema
+	roleCollection := lib.Collections("roles")
+	err = roleCollection.FindOne(context.TODO(), bson.M{"_id": auth.RoleId}).Decode(&role)
+	if err != nil {
+		return &types.AuthSchemaPopulated{}, fmt.Errorf("could not find role: %v", err)
+	}
+	
+	// Populate Profile
+	var profile schema.ProfileSchema
+	profileCollection := lib.Collections("profiles")
+	err = profileCollection.FindOne(context.TODO(), bson.M{"authId": auth.ID}).Decode(&profile)
+	if err != nil {
+		return &types.AuthSchemaPopulated{}, fmt.Errorf("could not find profile: %v", err)
+	}
+
+	// Populate Permissions
+	var permissions []schema.PermissionSchema
+	permissionCollection := lib.Collections("permissions")
+	cursor, err := permissionCollection.Find(context.TODO(), bson.M{"_id": bson.M{"$in": auth.Permissions}})
+	if err != nil {
+		return &types.AuthSchemaPopulated{}, fmt.Errorf("could not find permissions: %v", err)
+	}
+	if err = cursor.All(context.TODO(), &permissions); err != nil {
+		return &types.AuthSchemaPopulated{}, fmt.Errorf("could not decode permissions: %v", err)
+	}
+
+	// Create populated user
+	populatedAuth := types.AuthSchemaPopulated{
+		ID:          auth.ID,
+		FullName:    auth.FullName,
+		Email:       auth.Email,
+		Password:    auth.Password,
+		Role:      role,
+		Permissions: permissions,
+		Profile: 	 profile,
+	}
+
+	return &populatedAuth, nil
 }

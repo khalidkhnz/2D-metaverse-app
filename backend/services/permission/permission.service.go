@@ -38,6 +38,15 @@ func GetPermissionByID(ctx context.Context, id primitive.ObjectID) (*schema.Perm
 	return &permission, nil
 }
 
+func GetPermissionByName(ctx context.Context, name string) (*schema.PermissionSchema, error) {
+	var permission schema.PermissionSchema
+	err := lib.Collections("permissions").FindOne(ctx, bson.M{"name": name}).Decode(&permission)
+	if err != nil {
+		return nil, err
+	}
+	return &permission, nil
+}
+
 
 func GetAllPermissions(ctx context.Context) ([]schema.PermissionSchema, error) {
 	var permissions []schema.PermissionSchema

@@ -10,7 +10,6 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/khalidkhnz/2D-metaverse-app/backend/lib"
 	authService "github.com/khalidkhnz/2D-metaverse-app/backend/services/auth"
-	profileService "github.com/khalidkhnz/2D-metaverse-app/backend/services/profile"
 	"github.com/khalidkhnz/2D-metaverse-app/backend/types"
 	"go.mongodb.org/mongo-driver/bson/primitive" // For ObjectID
 )
@@ -73,30 +72,18 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		}
 
 		// Fetch user data from database
-		user, err := authService.GetUserByUserId(userID)
+		populatedUser, err := authService.GetPopulatedUserByUserId(userID)
 		if err != nil {
 			w.WriteHeader(http.StatusUnauthorized)
 			json.NewEncoder(w).Encode(map[string]any{
 				"success": false,
-				"message": "User not found",
+				"message": err.Error(),
 			})
 			return
 		}
 
-		profile,err := profileService.GetProfileByAuthId(userID)
-		if err != nil {
-			w.WriteHeader(http.StatusUnauthorized)
-			json.NewEncoder(w).Encode(map[string]any{
-				"success": false,
-				"message": "Profile not found",
-			})
-			return
-		}
-
-		// Store user in context and pass it to the next handler
 		ctx := context.WithValue(r.Context(), "user", types.FullProfile{
-			Auth:user,
-			Profile:profile,
+			User:populatedUser,
 		})
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
