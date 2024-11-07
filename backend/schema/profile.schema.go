@@ -7,7 +7,7 @@ import (
 )
 
 type ProfileSchema struct {
-	ID        primitive.ObjectID `bson:"_id,omitempty" json:"id"`
+	ID        primitive.ObjectID `bson:"_id,omitempty" json:"_id"`
 	AuthID    primitive.ObjectID `bson:"authId" json:"authId"`
 	FullName  string             `bson:"firstName" json:"fullName"`
 	Bio       string             `bson:"bio" json:"bio"`

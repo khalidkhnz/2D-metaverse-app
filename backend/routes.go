@@ -5,6 +5,7 @@ import (
 
 	"github.com/gorilla/mux"
 	authControllers "github.com/khalidkhnz/2D-metaverse-app/backend/controllers/auth"
+	roleController "github.com/khalidkhnz/2D-metaverse-app/backend/controllers/role"
 	"github.com/khalidkhnz/2D-metaverse-app/backend/lib"
 	"github.com/khalidkhnz/2D-metaverse-app/backend/middlewares"
 )
@@ -18,6 +19,15 @@ func (s *APIServer) AuthRouter(router *mux.Router) {
 	// REQUIRES TOKEN
 	router.Handle("/auth/current-user", middlewares.AuthMiddleware(makeHTTPHandleFunc(authControllers.HandleCurrentUser))).Methods("GET")
 }
+
+func (s *APIServer) RoleRouter(router *mux.Router){
+	router.Handle("/role/create-role", middlewares.AuthMiddleware(makeHTTPHandleFunc(roleController.HandleCreateRole))).Methods("POST")
+	router.Handle("/role/delete-role", middlewares.AuthMiddleware(makeHTTPHandleFunc(roleController.HandleDeleteRole))).Methods("DELETE")
+	router.Handle("/role/get-role", middlewares.AuthMiddleware(makeHTTPHandleFunc(roleController.HandleGetRole))).Methods("GET")
+	router.Handle("/role/update-role", middlewares.AuthMiddleware(makeHTTPHandleFunc(roleController.HandleUpdateRole))).Methods("PUT")
+	router.Handle("/role/get-all-role", makeHTTPHandleFunc(roleController.HandleGetAllRoles)).Methods("GET")
+}
+
 
 func (s *APIServer) OrganizationRouter(router *mux.Router) {
 	router.HandleFunc("/org/signup", makeHTTPHandleFunc(authControllers.HandleCreateAccount)).Methods("POST")

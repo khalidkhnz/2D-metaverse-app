@@ -7,10 +7,13 @@ import (
 )
 
 type AuthSchema struct {
-	ID        primitive.ObjectID `bson:"_id,omitempty" json:"id"`
-	FullName string              `bson:"firstName" json:"fullName"`
-	Email     string             `bson:"email" json:"email"`
-	Password  string             `bson:"password" json:"password"`
+	ID        	primitive.ObjectID 		`bson:"_id,omitempty" json:"_id"`
+	FullName 	string              	`bson:"fullName" json:"fullName"`
+	Email     	string             		`bson:"email" json:"email"`
+	Password  	string             		`bson:"password" json:"password"`
+	RoleId  	primitive.ObjectID      `bson:"roleId" json:"roleId"`
+	Permissions []primitive.ObjectID	`bson:"permissions" json:"permissions"`
+	AvatarId  	primitive.ObjectID      `bson:"avatarId" json:"avatarId"`
 }
 
 func (a *AuthSchema) Validate() error {
@@ -22,6 +25,9 @@ func (a *AuthSchema) Validate() error {
 	}
 	if a.Password == "" {
 		return errors.New("missing required field: password")
+	}
+	if a.RoleId.String() == "" {
+		return errors.New("missing required field: roleId")
 	}
 	return nil
 }

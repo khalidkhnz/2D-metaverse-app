@@ -2,10 +2,7 @@ package lib
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
-	"os"
-	"os/exec"
 
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -30,23 +27,3 @@ func GenerateJWTToken(userID string) (string, error) {
 	return token.SignedString(JwtSecret)
 }
 
-
-func RunReactApp() error {
-	// Change directory to ./views
-	if err := os.Chdir("./views"); err != nil {
-		log.Printf("Error changing directory to './views': %v", err)
-		return err
-	}
-	log.Printf("Changed directory to './views'")
-
-	// Run the React app
-	cmd := exec.Command("sh", "-c", "npm start")
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		log.Printf("Error running 'npm start' command: %v", err)
-		return err
-	}
-	log.Printf("Output of 'npm start' command: %s", string(output))
-
-	return nil
-}

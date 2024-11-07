@@ -92,6 +92,7 @@ func (s *APIServer) Run(runOptions RunOptions)  {
 	// API ROUTERS
 	s.PublicRouter(apiRouter)
 	s.AuthRouter(apiRouter)
+	s.RoleRouter(apiRouter)
 	s.OrganizationRouter(apiRouter)
 
 	if(runOptions.EnableProxyServer){

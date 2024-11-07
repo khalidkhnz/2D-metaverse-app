@@ -1,0 +1,42 @@
+### CREATE ROLE
+POST http://localhost:4000/api/v1/role/create-role HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzE1NzU1NjcsInVzZXJJRCI6IjY3MmM4NGFiODMwYjVkZTVhZTA3NWE2OSJ9.dLm2c5rYJKhdFmB4uxFCW94IBKU7cNH3EdtWhh3xCxc
+Content-Type: application/json
+
+{
+    "name": "USER",
+    "description": "USER is a basic role for common user"
+}
+
+
+### UPDATE ROLE
+PUT http://localhost:4000/api/v1/role/update-role?roleId=123 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzE1NzU1NjcsInVzZXJJRCI6IjY3MmM4NGFiODMwYjVkZTVhZTA3NWE2OSJ9.dLm2c5rYJKhdFmB4uxFCW94IBKU7cNH3EdtWhh3xCxc
+Content-Type: application/json
+
+{
+    "name": "USER",
+    "description": "USER is a basic role for common user"
+}
+
+
+### DELETE ROLE
+DELETE http://localhost:4000/api/v1/role/delete-role?roleId=123 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzE1NzU1NjcsInVzZXJJRCI6IjY3MmM4NGFiODMwYjVkZTVhZTA3NWE2OSJ9.dLm2c5rYJKhdFmB4uxFCW94IBKU7cNH3EdtWhh3xCxc
+Content-Type: application/json
+
+
+### GET ROLE
+GET http://localhost:4000/api/v1/role/get-all-role HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzE1NzU1NjcsInVzZXJJRCI6IjY3MmM4NGFiODMwYjVkZTVhZTA3NWE2OSJ9.dLm2c5rYJKhdFmB4uxFCW94IBKU7cNH3EdtWhh3xCxc
+Content-Type: application/json
+
+
+### GET ROLES
+GET http://localhost:4000/api/v1/role/get-role HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzE1NzU1NjcsInVzZXJJRCI6IjY3MmM4NGFiODMwYjVkZTVhZTA3NWE2OSJ9.dLm2c5rYJKhdFmB4uxFCW94IBKU7cNH3EdtWhh3xCxc
+Content-Type: application/json
+
+{
+    "roleIds":["672c8556830b5de5ae075a6b","672c85d6830b5de5ae075a6d"]
+}
