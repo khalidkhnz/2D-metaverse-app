@@ -66,7 +66,16 @@ func ConnectToMongo(mongoURI string) (*mongo.Client, error) {
 	return client, nil
 }
 
-func (s *APIServer) Run() {
+type RunOptions struct {
+	EnableProxyServer bool
+	EnableFileServer bool
+}
+
+func (s *APIServer) Run(runOptions RunOptions)  {
+
+	if(runOptions.EnableFileServer && runOptions.EnableProxyServer){
+		 log.Fatal("proxy server and file server won't work simultaniously")
+	}
 
 	// MUX ROUTER
 	router := mux.NewRouter()
@@ -84,12 +93,16 @@ func (s *APIServer) Run() {
 	s.PublicRouter(apiRouter)
 	s.AuthRouter(apiRouter)
 	s.OrganizationRouter(apiRouter)
-	
-	// PROXY SERVER "/"
-	s.ProxyServer(lib.FrontEndProxyURL,router)
 
-	// FILE SERVER "/{api-prefix}/file-server"
-	s.FileServer("./views","/file-server",apiRouter)
+	if(runOptions.EnableProxyServer){
+		fmt.Println("Starting Proxy Server...")
+		s.ProxyServer(lib.FrontEndProxyURL,router)	// PROXY SERVER "/"
+	}
+
+	if(runOptions.EnableFileServer){
+		fmt.Println("Starting File Server...")
+		s.FileServer("./views" ,"/",router)			// FILE SERVER URL="/"
+	}
 	
 	// NOT FOUND HANDLE "*"
 	router.HandleFunc("/{path:.*}", func(w http.ResponseWriter, r *http.Request) {
