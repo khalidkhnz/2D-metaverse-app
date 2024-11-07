@@ -35,7 +35,7 @@ func (p *ProfileSchema) Validate() error {
 }
 
 
-func CreateProfile(authID primitive.ObjectID, fullName, bio, avatar, username, role, status, socketID string) *ProfileSchema {
+func CreateProfileDoc(authID primitive.ObjectID, fullName, bio, avatar, username, role, status, socketID string) *ProfileSchema {
 	return &ProfileSchema{
 		ID:        primitive.NewObjectID(),
 		AuthID:    authID,

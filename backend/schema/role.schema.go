@@ -22,7 +22,7 @@ func (r *RoleSchema) Validate() error {
 	return nil
 }
 
-func CreateRole(name, description string) *RoleSchema {
+func CreateRoleDoc(name, description string) *RoleSchema {
 	return &RoleSchema{
 		ID:          primitive.NewObjectID(),
 		Name:        name,

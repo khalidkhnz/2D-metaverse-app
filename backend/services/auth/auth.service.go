@@ -36,7 +36,7 @@ func CreateAccount(authBody schema.AuthSchema) (*schema.AuthSchema, error) {
 	authID := result.InsertedID.(primitive.ObjectID)
 
 	// CREATING PROFILE
-	profile := schema.CreateProfile(authID, authBody.FullName, "", "", "", "", "", "")
+	profile := schema.CreateProfileDoc(authID, authBody.FullName, "", "", "", "", "", "")
 
 	// INSERTING PROFILE
 	_, err = profileCollection.InsertOne(context.TODO(), profile)

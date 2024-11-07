@@ -22,7 +22,7 @@ func (p *PermissionSchema) Validate() error {
 	return nil
 }
 
-func CreatePermission(name, description string) *PermissionSchema {
+func CreatePermissionDoc(name, description string) *PermissionSchema {
 	return &PermissionSchema{
 		ID:          primitive.NewObjectID(),
 		Name:        name,

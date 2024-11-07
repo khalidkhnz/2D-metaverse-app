@@ -41,7 +41,7 @@ func (a *AuthSchema) Validate() error {
 	return nil
 }
 
-func CreateAuth(fullName, email, password string) *AuthSchema {
+func CreateAuthDoc(fullName, email, password string) *AuthSchema {
 	return &AuthSchema{
 		ID:        primitive.NewObjectID(),
 		FullName:  fullName,
