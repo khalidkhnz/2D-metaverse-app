@@ -15,10 +15,7 @@ var Upgrader = websocket.Upgrader{
 	},
 }
 
-
-
-
-func Handler(w http.ResponseWriter, r *http.Request) {
+func WSHandler(w http.ResponseWriter, r *http.Request) {
 	conn, err := Upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println("WebSocket connection to 'ws://localhost:4000/ws' failed: ", err)

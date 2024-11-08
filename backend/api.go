@@ -87,7 +87,7 @@ func (s *APIServer) Run(runOptions RunOptions)  {
 	apiRouter := router.PathPrefix(lib.ApiPrefix).Subrouter()
 	
 	// WEBSOCKET CONN "/api/v1"
-	router.HandleFunc("/ws", Handler).Methods("GET")
+	router.HandleFunc("/ws", WSHandler).Methods("GET")
 	
 	// API ROUTERS
 	s.PublicRouter(apiRouter)

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/khalidkhnz/2D-metaverse-app/backend/lib"
 	"github.com/khalidkhnz/2D-metaverse-app/backend/schema"
@@ -16,6 +17,8 @@ import (
 
 
 func CreateAccount(authBody schema.AuthSchema,spaceCreator bool) (*schema.AuthSchema, error) {
+	currentTime := time.Now()
+
 	// GETTING ALL COLLECTIONS
 	authCollection := lib.Collections("auths")
 	profileCollection := lib.Collections("profiles")
@@ -33,6 +36,9 @@ func CreateAccount(authBody schema.AuthSchema,spaceCreator bool) (*schema.AuthSc
 	if authBody.Permissions == nil {
 		authBody.Permissions = []primitive.ObjectID{}
 	}
+	authBody.CreatedAt = currentTime
+	authBody.UpdatedAt = currentTime
+
 	
 	// GET PERMISSIONS 
 	if spaceCreator {

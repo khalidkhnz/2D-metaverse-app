@@ -2,6 +2,7 @@ package schema
 
 import (
 	"errors"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -16,6 +17,8 @@ type ProfileSchema struct {
 	Role      string             `bson:"role" json:"role"`
 	Status    string             `bson:"status" json:"status"`
 	SocketID  string             `bson:"socketId" json:"socketId"`
+	CreatedAt   time.Time            `bson:"createdAt" json:"createdAt"`
+	UpdatedAt   time.Time            `bson:"updatedAt" json:"updatedAt"`
 }
 
 func (p *ProfileSchema) Validate() error {

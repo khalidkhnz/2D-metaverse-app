@@ -3,6 +3,7 @@ package permissionService
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/khalidkhnz/2D-metaverse-app/backend/lib"
 	"github.com/khalidkhnz/2D-metaverse-app/backend/schema"
@@ -13,6 +14,9 @@ import (
 
 
 func CreatePermission(ctx context.Context, permission *schema.PermissionSchema) (*mongo.InsertOneResult, error) {
+	currentTime := time.Now()
+
+	
 	if err := permission.Validate(); err != nil {
 		return nil, err
 	}
@@ -25,6 +29,9 @@ func CreatePermission(ctx context.Context, permission *schema.PermissionSchema) 
 	} else if err != mongo.ErrNoDocuments {
 		return nil, err
 	}
+
+	permission.CreatedAt = currentTime
+	permission.UpdatedAt = currentTime
 
 	return lib.Collections("permissions").InsertOne(ctx, permission)
 }
@@ -77,12 +84,19 @@ func GetAllPermissions(ctx context.Context) ([]schema.PermissionSchema, error) {
 
 
 func UpdatePermission(ctx context.Context, id primitive.ObjectID, update bson.M) (*mongo.UpdateResult, error) {
-	if _, ok := update["name"]; ok && update["name"] == "" {
-		return nil, fmt.Errorf("missing required field: name")
+	currentTime := time.Now()
+
+	if name, ok := update["name"]; ok {
+		if name == "" {
+			return nil, fmt.Errorf("missing required field: name")
+		}
 	}
-	if _, ok := update["description"]; ok && update["description"] == "" {
-		return nil, fmt.Errorf("missing required field: description")
+	if description, ok := update["description"]; ok {
+		if description == "" {
+			return nil, fmt.Errorf("missing required field: description")
+		}
 	}
+	update["updatedAt"] = currentTime
 	return lib.Collections("permissions").UpdateOne(ctx, bson.M{"_id": id}, bson.M{"$set": update})
 }
 

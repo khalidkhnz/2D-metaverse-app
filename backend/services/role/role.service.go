@@ -3,6 +3,7 @@ package roleService
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/khalidkhnz/2D-metaverse-app/backend/lib"
 	"github.com/khalidkhnz/2D-metaverse-app/backend/schema"
@@ -13,6 +14,8 @@ import (
 
 
 func CreateRole(ctx context.Context, role *schema.RoleSchema) (*mongo.InsertOneResult, error) {
+	currentTime := time.Now()
+	
 	if err := role.Validate(); err != nil {
 		return nil, err
 	}
@@ -25,6 +28,9 @@ func CreateRole(ctx context.Context, role *schema.RoleSchema) (*mongo.InsertOneR
 	} else if err != mongo.ErrNoDocuments {
 		return nil, err
 	}
+
+	role.CreatedAt = currentTime
+	role.UpdatedAt = currentTime
 
 	return lib.Collections("roles").InsertOne(ctx, role)
 }
@@ -75,15 +81,17 @@ func GetAllRoles(ctx context.Context) ([]schema.RoleSchema, error) {
 	return roles, nil
 }
 
-
-
 func UpdateRole(ctx context.Context, id primitive.ObjectID, update bson.M) (*mongo.UpdateResult, error) {
+	currentTime := time.Now()
+
 	if _, ok := update["name"]; ok && update["name"] == "" {
 		return nil, fmt.Errorf("missing required field: name")
 	}
 	if _, ok := update["description"]; ok && update["description"] == "" {
 		return nil, fmt.Errorf("missing required field: description")
 	}
+
+	update["updatedAt"] = currentTime
 	return lib.Collections("roles").UpdateOne(ctx, bson.M{"_id": id}, bson.M{"$set": update})
 }
 
