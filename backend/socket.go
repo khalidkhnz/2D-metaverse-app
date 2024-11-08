@@ -29,10 +29,10 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 	// Store the new connection in SOCKET_CONNECTIONS
 	SOCKET_CONNECTIONS[conn] = conn.RemoteAddr().String()
 
-	// Emit "Hello" event to the new connection
+	// Emit "REMOTE-ADDR" event to the new connection
 	err = conn.WriteJSON(map[string]any{
-		"success":"true",
-		"data": map[string]any{"socketId": conn.RemoteAddr().String()},
+		"type":"SERVER:REMOTE-ADDR",
+		"payload": map[string]any{"remoteAddr": conn.RemoteAddr().String()},
 	})
 	if err != nil {
 		log.Println(err)
