@@ -15,9 +15,6 @@ var Upgrader = websocket.Upgrader{
 	},
 }
 
-
-
-
 func Handler(w http.ResponseWriter, r *http.Request) {
 	conn, err := Upgrader.Upgrade(w, r, nil)
 	if err != nil {
