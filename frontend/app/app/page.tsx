@@ -6,7 +6,7 @@ import React from "react";
 const Game = dynamic(() => import("./Game"), {
   ssr: false,
   loading: () => (
-    <div className="w-full flex justify-center items-center h-screen bg-[#242424]">
+    <div className="flex h-screen w-full items-center justify-center bg-[#242424]">
       <h1 className="text-xl font-bold text-white">LOADING...</h1>
     </div>
   ),

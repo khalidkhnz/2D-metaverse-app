@@ -1,11 +1,11 @@
 ### CREATE ROLE
 POST http://localhost:4000/api/v1/role/create-role HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzE1NzU1NjcsInVzZXJJRCI6IjY3MmM4NGFiODMwYjVkZTVhZTA3NWE2OSJ9.dLm2c5rYJKhdFmB4uxFCW94IBKU7cNH3EdtWhh3xCxc
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzE3NTE3MjAsInVzZXJJRCI6IjY3MmYzNTcxOTRjZTE2MTQ4NzkwZDljNCJ9.C2WCHUlTgYATYxKKCippsZXr0exFZpAwgFjIfXGNf70
 Content-Type: application/json
 
 {
-    "name": "USER",
-    "description": "USER is a basic role for common user"
+    "name": "ADMIN",
+    "description": "ADMIN is role below SUPER_ADMIN"
 }
 
 

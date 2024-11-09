@@ -4,10 +4,10 @@ POST http://localhost:4000/api/v1/auth/signup?mode=CREATOR HTTP/1.1
 content-type: application/json
 
 {
-    "fullName": "khalid khan",
-    "email": "admin@gmail.com",
-    "password": "Khalid@gmail.com",
-    "roleId": "672c8556830b5de5ae075a6b",
+    "fullName": "Saloni Mishra",
+    "email": "saloni@gmail.com",
+    "password": "saloni@gmail.com",
+    "roleId": "672f3450650e060d5f321dfb",
     "permissions": []
 }
 
@@ -17,14 +17,14 @@ POST http://localhost:4000/api/v1/auth/login HTTP/1.1
 Content-Type: application/json
 
 {
-    "email": "admin@gmail.com",
-    "password": "Khalid@gmail.com"
+    "email": "saloni@gmail.com",
+    "password": "saloni@gmail.com"
 }
 
 
 ### CURRENT USER
 GET http://localhost:4000/api/v1/auth/current-user HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzE1ODY5MTAsInVzZXJJRCI6IjY3MmNiMTM5NzM3Y2UzZjVmYjFmYzBjMiJ9.oOr4BrFjzGLyQl6ymgcRkFqR3K_G_l0y_SEys9RsBiw
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzE3NTE3MjAsInVzZXJJRCI6IjY3MmYzNTcxOTRjZTE2MTQ4NzkwZDljNCJ9.C2WCHUlTgYATYxKKCippsZXr0exFZpAwgFjIfXGNf70
 
 
 ### GET USER BY ID
