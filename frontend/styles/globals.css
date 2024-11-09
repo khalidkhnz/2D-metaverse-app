@@ -72,3 +72,7 @@
     @apply bg-background text-foreground;
   }
 }
+
+.test {
+  border: 2px solid purple;
+}
