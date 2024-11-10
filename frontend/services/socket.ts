@@ -1,7 +1,7 @@
 "use client";
 
 import { Toast } from "@/lib/toast";
-import { wait } from "@/lib/util";
+import { wait } from "@/lib/utils";
 
 type ClientEvents =
   | "CLIENT:REMOTE-ADDR"

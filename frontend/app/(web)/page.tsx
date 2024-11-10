@@ -1,6 +1,7 @@
 "use client";
 
 import Avatar from "@/components/avatar";
+import { useFormik } from "formik";
 import {
   HoverCard,
   HoverCardContent,
@@ -20,51 +21,125 @@ import {
 } from "@/components/ui/carousel";
 import Button from "@/components/Button";
 import { Plus } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { useAppContext } from "@/services/app-context";
+import { Y } from "@/lib/Y";
+import { FormsBody } from "@/lib/Forms";
+import { Toast } from "@/lib/toast";
+import Image from "next/image";
+
+interface IStateImageType {
+  result: string | ArrayBuffer | null | undefined;
+  file: File | null;
+}
 
 const HomePage = () => {
   const [active, setActive] = useState(0);
+  const [showAddAccountForm, setShowAddAccountForm] = useState(false);
+  const [image, setImage] = useState<IStateImageType>({
+    file: null,
+    result: null,
+  });
 
   useEffect(() => {
     const handleSocketMessage = (event: MessageEvent<any>) => {
       console.log({ socketHome: JSON.parse(event.data) });
     };
     socketService.addMessageHandler(handleSocketMessage);
+
+    const showScreenTimer = setTimeout(() => {
+      gsap.to(".home-main", {
+        display: "flex",
+        opacity: 1,
+        duration: 2,
+        ease: "power2.out",
+      });
+    }, 500);
+
     return () => {
+      clearTimeout(showScreenTimer);
       socketService.removeMessageHandler(handleSocketMessage);
     };
   }, []);
 
-  function handleContinue(mode?: "add-account" | "login") {
-    if (active === 0 || mode == "add-account") {
+  function handleContinue(idx?: number) {
+    handleAnimation();
+    if (active === 0 || idx == 0) {
       console.log("ADD ACCOUNT");
+      setShowAddAccountForm(true);
+      gsap.to(".carousel__btn", {
+        opacity: 0,
+      });
+      gsap.to(".auth__form", {
+        translateY: "-200px",
+        display: "flex",
+        opacity: 1,
+        pointerEvents: "auto",
+      });
     } else {
       console.log("LOGGIN IN PREVIOUS ACCOUNT");
     }
   }
 
+  function handleAnimation() {
+    gsap.to("#welcome-text", {
+      translateY: "-200px",
+      opacity: 0,
+      duration: 0.3,
+    });
+    gsap.to("#welcome-carousel", {
+      translateY: "-200px",
+      duration: 0.3,
+    });
+    gsap.to("#welcome-continue", {
+      opacity: 0,
+      duration: 0.3,
+      onComplete: () => {
+        gsap.set("#welcome-continue", {
+          pointerEvents: "none",
+        });
+      },
+    });
+  }
+
   return (
     <main
       className={cn(
+        "home-main hidden overflow-hidden opacity-0",
         "relative flex h-screen w-full flex-col items-center justify-center bg-transparent",
       )}
     >
       <TimeHoverCard />
-
-      <h1 className="text-[30px] font-light text-white md:text-[4vw] 2xl:text-[64px]">
+      <h1
+        id="welcome-text"
+        className="text-[30px] font-light text-white md:text-[4vw] 2xl:text-[64px]"
+      >
         Welcome to 2D Metaverse
       </h1>
-      <span className="mt-2 text-[14px] font-light text-white lg:text-[1.3vw] 2xl:text-[20px]">
+      <span
+        id="welcome-text"
+        className="mt-2 text-[14px] font-light text-white lg:text-[1.3vw] 2xl:text-[20px]"
+      >
         Welcome Back | स्वागत हे | مرحباً | Bienvenido
       </span>
-      <div className="mt-[100px] w-[100%] justify-center py-4">
+      <div
+        id="welcome-carousel"
+        className="mt-[100px] w-[100%] justify-center py-4"
+      >
         <HomeCarousel
+          handleImageChange={{
+            image,
+            setImage,
+          }}
+          showAddAccountForm={showAddAccountForm}
           onClick={handleContinue}
           data={[]}
           active={active}
           setActive={setActive}
         />
       </div>
-      <div className="">
+      <AuthForm className="auth__form pointer-events-none hidden opacity-0" />
+      <div id="welcome-continue" className="">
         <Button
           onClick={() => handleContinue()}
           className="w-[160px]"
@@ -77,13 +152,109 @@ const HomePage = () => {
   );
 };
 
+function AuthForm({ className }: { className?: string }) {
+  const [isLoginForm, setIsLoginForm] = useState(false);
+  const { handleRegister, handleLogin } = useAppContext();
+
+  const registerFk = useFormik({
+    initialValues: FormsBody.register(),
+    onSubmit: handleRegister,
+    validationSchema: Y.register,
+  });
+
+  const loginFk = useFormik({
+    initialValues: FormsBody.login(),
+    onSubmit: handleLogin,
+    validationSchema: Y.login,
+  });
+
+  useEffect(() => {
+    if (isLoginForm) {
+      gsap.to("#welcome-carousel", {
+        opacity: 0,
+        pointerEvents: "none",
+      });
+    } else {
+      gsap.to("#welcome-carousel", {
+        opacity: 1,
+        pointerEvents: "auto",
+      });
+    }
+  }, [isLoginForm]);
+
+  const LoginFormMap = [
+    {
+      name: "email",
+      placeholder: "Email",
+      type: "email",
+    },
+    {
+      name: "password",
+      placeholder: "Password",
+      type: "password",
+    },
+  ];
+
+  const RegisterFormMap = [
+    {
+      name: "fullName",
+      placeholder: "Full Name",
+      type: "text",
+    },
+    ...LoginFormMap,
+  ];
+
+  return (
+    <div className={cn("w-full max-w-[350px] flex-col gap-2", className)}>
+      {(isLoginForm ? LoginFormMap : RegisterFormMap).map((field, index) => {
+        return (
+          <Input
+            key={`${field.name}-${index}-${field.type}`}
+            name={field.name}
+            onChange={(isLoginForm ? loginFk : registerFk).handleChange}
+            onBlur={(isLoginForm ? loginFk : registerFk).handleBlur}
+            customVariant="primary"
+            type={field.type}
+            placeholder={field.placeholder}
+          />
+        );
+      })}
+      <span
+        onClick={() => setIsLoginForm((prev) => !prev)}
+        className="cursor-pointer text-sm font-normal text-white/70"
+      >
+        {isLoginForm ? "Dont have Account? Register." : "Have Account? Login."}
+      </span>
+      <Button
+        type="button"
+        disabled={
+          Object.keys(isLoginForm ? loginFk.errors : registerFk.errors)
+            .length !== 0
+        }
+        className="mt-2 h-12 font-normal text-white/90"
+        customVariants="primary"
+        onClick={() => (isLoginForm ? loginFk : registerFk).handleSubmit()}
+      >
+        {isLoginForm ? "Login" : "Create Account"}
+      </Button>
+    </div>
+  );
+}
+
 function HomeCarousel({
+  handleImageChange: { image, setImage },
   active = 0,
   setActive,
   data,
   onClick,
+  showAddAccountForm,
 }: {
-  onClick?: (val: "add-account" | "login") => void;
+  handleImageChange: {
+    image: IStateImageType;
+    setImage: React.Dispatch<React.SetStateAction<IStateImageType>>;
+  };
+  showAddAccountForm?: boolean;
+  onClick?: (idx: number) => void;
   data?: any[];
   active: number;
   setActive: React.Dispatch<React.SetStateAction<number>>;
@@ -117,14 +288,23 @@ function HomeCarousel({
           })}
         >
           <div
-            onClick={() => onClick && onClick("add-account")}
             className={cn(
               "flex items-center justify-center p-1 py-5 pb-[80px]",
             )}
           >
             <User
+              handleImageChange={{
+                image: image,
+                setImage: setImage,
+              }}
               variant={"add-account"}
-              onClick={() => setActive(0)}
+              name={showAddAccountForm ? "Add Profile Picture" : "Add Account"}
+              onClick={() => {
+                setActive(0);
+                if (onClick) {
+                  onClick(0);
+                }
+              }}
               onMouseEnter={() => setActive(0)}
               className={
                 0 === active ? "active-user-card" : "inactive-user-card"
@@ -149,7 +329,12 @@ function HomeCarousel({
               )}
             >
               <User
-                onClick={() => setActive(index + 1)}
+                onClick={() => {
+                  setActive(index + 1);
+                  if (onClick) {
+                    onClick(index + 1);
+                  }
+                }}
                 onMouseEnter={() => setActive(index + 1)}
                 name={`khalid.khnz ${index + 1}`}
                 className={
@@ -167,13 +352,18 @@ function HomeCarousel({
           </CarouselItem>
         ))}
       </CarouselContent>
-      <CarouselPrevious />
-      <CarouselNext />
+      {LENGHT !== 0 && (
+        <>
+          <CarouselPrevious className="carousel__btn" />
+          <CarouselNext className="carousel__btn" />
+        </>
+      )}
     </Carousel>
   );
 }
 
 function User({
+  handleImageChange,
   name,
   className,
   avatarClassName,
@@ -181,6 +371,10 @@ function User({
   onMouseEnter,
   variant,
 }: {
+  handleImageChange?: {
+    image: IStateImageType;
+    setImage: React.Dispatch<React.SetStateAction<IStateImageType>>;
+  };
   name?: string;
   className?: string;
   avatarClassName?: string;
@@ -201,9 +395,9 @@ function User({
       >
         <div
           className={cn(
-            "h-[10vw] max-h-[160px] min-h-[110px] w-[10vw] min-w-[110px] max-w-[160px]",
+            "relative h-[10vw] max-h-[160px] min-h-[110px] w-[10vw] min-w-[110px] max-w-[160px] cursor-pointer",
             "mt-[10px] border-[4px] border-transparent",
-            "flex items-center justify-center rounded-full bg-white/20 backdrop-blur-md",
+            "flex items-center justify-center overflow-hidden rounded-full bg-white/20 backdrop-blur-md",
             avatarClassName,
           )}
         >
@@ -213,9 +407,34 @@ function User({
               "aspect-square text-white",
             )}
           />
+          {handleImageChange?.image.result && (
+            <Image
+              className="object-cover"
+              src={handleImageChange?.image.result as string}
+              alt="profile"
+              fill
+            />
+          )}
+          <input
+            type="file"
+            onChange={(e) => {
+              if (handleImageChange && !handleImageChange?.setImage) return;
+              const file = e?.target?.files?.[0];
+              if (file && file.type.startsWith("image/")) {
+                const reader = new FileReader();
+                reader.onload = (ev) =>
+                  handleImageChange?.setImage({
+                    result: ev?.target?.result,
+                    file: file,
+                  });
+                reader.readAsDataURL(file);
+              } else Toast.warning("Invalid image please select another");
+            }}
+            className="absolute left-0 top-0 h-full w-full opacity-0"
+          />
         </div>
-        <h2 className="text-[12px] font-light text-white md:text-[1.5vw] lg:text-[20px]">
-          Add Account
+        <h2 className="cursor-pointer text-[12px] font-light text-white md:text-[1.5vw] lg:text-[20px]">
+          {name}
         </h2>
       </div>
     );
@@ -234,13 +453,13 @@ function User({
         >
           <Avatar
             className={cn(
-              "h-[10vw] max-h-[160px] min-h-[110px] w-[10vw] min-w-[110px] max-w-[160px]",
+              "h-[10vw] max-h-[160px] min-h-[110px] w-[10vw] min-w-[110px] max-w-[160px] cursor-pointer",
               "mt-[10px] border-[4px] border-transparent",
               avatarClassName,
             )}
             variant={"default"}
           />
-          <h2 className="text-[18px] font-light text-white md:text-[1.8vw] lg:text-[25px]">
+          <h2 className="cursor-pointer text-[18px] font-light text-white md:text-[1.8vw] lg:text-[25px]">
             {name}
           </h2>
         </div>

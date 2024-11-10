@@ -38,6 +38,7 @@ const Button = React.forwardRef<HTMLButtonElement, ExtendedButtonProps>(
         <Btn
           className={cn(
             "bg-white/20 backdrop-blur-md hover:bg-white/30",
+            "disabled:bg-white/5",
             className,
           )}
           variant={variant}
