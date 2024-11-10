@@ -16,4 +16,4 @@ var URL = "http://" + Base
 
 var FrontEndProxyURL = "http://localhost:3000"
 
-var DbUrl = "mongodb://localhost:27017"
+var DbUrl = "mongodb+srv://khalidkhnz:khalidkhnz@khalid-cluster.ttkcc.mongodb.net/metaverse?retryWrites=true&w=majority&appName=khalid-cluster"

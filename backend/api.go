@@ -82,6 +82,14 @@ func (s *APIServer) Run(runOptions RunOptions)  {
 
 	// CUSTOM LOGGING MIDDLEWARE
 	router.Use(middlewares.LoggingMiddleware)
+
+	// CORS MIDDLEWARE
+	router.Use(middlewares.CORSMiddleware(middlewares.CORSOptions{
+		AllowedOrigins:   []string{"*"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Content-Type", "Authorization"},
+		AllowCredentials: true,
+	}))
 		
 	// API VER. PREFIX
 	apiRouter := router.PathPrefix(lib.ApiPrefix).Subrouter()
