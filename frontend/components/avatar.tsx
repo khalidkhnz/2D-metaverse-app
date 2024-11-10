@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import { Avatar as AvatarShad, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { CSSProperties } from "react";
 
 interface props {
   variant?: "circle" | "default";
@@ -7,6 +8,8 @@ interface props {
   className?: string;
   imgClassName?: string;
   fallbackClassName?: string;
+  imgUrl?: string;
+  style?: CSSProperties;
 }
 
 export default function Avatar({
@@ -15,11 +18,19 @@ export default function Avatar({
   className,
   fallbackClassName,
   imgClassName,
+  style,
+  ...props
 }: props) {
-  return (
-    <AvatarShad className={cn(className)}>
-      <AvatarImage className="" src="https://github.com/shadcn.png" />
-      <AvatarFallback className="">CN</AvatarFallback>
-    </AvatarShad>
-  );
+  if (variant === "default")
+    return (
+      <AvatarShad style={{ ...style }} className={cn(className)} {...props}>
+        <AvatarImage
+          className={imgClassName}
+          src={"https://github.com/shadcn.png"}
+        />
+        <AvatarFallback className={fallbackClassName}>
+          {fallback}
+        </AvatarFallback>
+      </AvatarShad>
+    );
 }
