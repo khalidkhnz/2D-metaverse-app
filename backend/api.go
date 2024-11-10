@@ -92,7 +92,7 @@ func (s *APIServer) Run(runOptions RunOptions)  {
 	}))
 		
 	// API VER. PREFIX
-	apiRouter := router.PathPrefix(lib.ApiPrefix).Subrouter()
+	apiRouter := router.PathPrefix(lib.GetAPIPrefix()).Subrouter()
 	
 	// WEBSOCKET CONN "/api/v1"
 	router.HandleFunc("/ws", WSHandler).Methods("GET")
@@ -106,7 +106,7 @@ func (s *APIServer) Run(runOptions RunOptions)  {
 
 	if(runOptions.EnableProxyServer){
 		fmt.Println("Starting Proxy Server...")
-		s.ProxyServer(lib.FrontEndProxyURL,router)	// PROXY SERVER "/"
+		s.ProxyServer(lib.GetFrontendProxyURL(),router)	// PROXY SERVER "/"
 	}
 
 	if(runOptions.EnableFileServer){

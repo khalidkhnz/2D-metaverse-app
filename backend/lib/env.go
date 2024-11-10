@@ -1,19 +1,61 @@
 package lib
 
-import "time"
+import (
+	"log"
+	"os"
+	"time"
 
-var JwtSecret = []byte("baba-yaga-secret")
+	"github.com/joho/godotenv"
+)
 
-var ExpirationTime = time.Now().Add(time.Hour * 24 * 7).Unix()
+// InitEnv loads environment variables from .env file
+func InitEnv() {
+    if err := godotenv.Load(); err != nil {
+        log.Println("No .env file found")
+    }
+}
 
-var Port = ":4000"
+var (
+    EXPIRATION_DURATION = time.Hour * 24 * 7
+)
 
-var ApiPrefix = "/api/v1"
+// Functions to retrieve environment variables after InitEnv() is called
+func GetJWTSecret() []byte {
+    return []byte(os.Getenv("JWT_SECRET"))
+}
 
-var Base = "localhost:4000"
+func GetPort() string {
+    return ":" + getEnv("PORT", "4000")
+}
 
-var URL = "http://" + Base
+func GetAPIPrefix() string {
+    return getEnv("API_PREFIX", "/api/v1")
+}
 
-var FrontEndProxyURL = "http://localhost:3000"
+func GetAPIBase() string {
+    return getEnv("API_BASE_URL", "")
+}
 
-var DbUrl = "mongodb+srv://khalidkhnz:khalidkhnz@khalid-cluster.ttkcc.mongodb.net/metaverse?retryWrites=true&w=majority&appName=khalid-cluster"
+func GetFullAPIBase() string {
+    return getEnv("FULL_API_BASE_URL", "")
+}
+
+func GetFrontendProxyURL() string {
+    return getEnv("FRONTEND_PROXY_URL", "")
+}
+
+func GetDBURI() string {
+    return getEnv("DB_URI", "")
+}
+
+func GetExpirationTime() int64 {
+    return time.Now().Add(EXPIRATION_DURATION).Unix()
+}
+
+// getEnv retrieves an environment variable or returns a fallback value
+func getEnv(key string, fallback string) string {
+    if value := os.Getenv(key); value != "" {
+        return value
+    }
+    return fallback
+}

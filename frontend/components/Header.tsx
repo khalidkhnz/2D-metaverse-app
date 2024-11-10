@@ -105,17 +105,17 @@ function AvatarDropDownMenu() {
               <DropdownMenuSub key={`subMenu-${idx}`}>
                 <DropdownMenuSubTrigger
                   className={cn(
-                    "text-md flex items-center justify-between gap-8 rounded-[2px] p-2 px-4 font-light text-white focus-within:text-black focus:text-black data-[state=open]:text-black",
+                    "text-md flex items-center justify-start rounded-[2px] p-2 px-4 font-light text-white focus-within:text-black focus:text-black data-[state=open]:text-black",
                     {
                       "border-t-[1px] border-[#1b1e22]": idx !== 0,
                     },
                     option.className,
                   )}
                 >
+                  {option?.icon && option.icon}
                   <span className="capitalize">
                     {option.name?.toLowerCase()}
                   </span>
-                  {option?.icon && option.icon}
                 </DropdownMenuSubTrigger>
                 <DropdownMenuPortal>
                   <DropdownMenuSubContent className="border-none bg-gradient-to-bl from-[#161a1e] to-[#262b2c] backdrop-blur-md">

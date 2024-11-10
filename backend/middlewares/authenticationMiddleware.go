@@ -37,7 +37,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 			}
-			return lib.JwtSecret, nil
+			return lib.GetJWTSecret(), nil
 		})
 
 		if err != nil || !token.Valid {

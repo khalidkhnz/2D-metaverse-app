@@ -20,12 +20,12 @@ func GenerateJWTToken(userID string) (string, error) {
 	// Create token with claims
 	claims := jwt.MapClaims{
 		"userID": userID,
-		"exp":    ExpirationTime, 
+		"exp":    GetExpirationTime(), 
 	}
 
 	// Create the JWT token with claims and signing method
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString(JwtSecret)
+	return token.SignedString(GetJWTSecret())
 }
 
 

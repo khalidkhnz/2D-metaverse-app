@@ -26,7 +26,7 @@ func (s *APIServer) ProxyServer(proxyURL string, router *mux.Router) {
 		r.Host = url.Host
 		r.URL.Scheme = url.Scheme
 		r.URL.Host = url.Host
-		r.Header.Set("X-Forwarded-Host", lib.Base)
+		r.Header.Set("X-Forwarded-Host", lib.GetAPIBase())
 	}
 
 	router.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
