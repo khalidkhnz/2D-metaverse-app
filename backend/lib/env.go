@@ -17,6 +17,7 @@ func InitEnv() {
 
 var (
     EXPIRATION_DURATION = time.Hour * 24 * 7
+    SHORT_EXPIRATION_DURATION = time.Hour / 4
 )
 
 // Functions to retrieve environment variables after InitEnv() is called
@@ -50,6 +51,10 @@ func GetDBURI() string {
 
 func GetExpirationTime() int64 {
     return time.Now().Add(EXPIRATION_DURATION).Unix()
+}
+
+func GetShortLivedExpirationTime() int64 {
+    return time.Now().Add(SHORT_EXPIRATION_DURATION).Unix()
 }
 
 // getEnv retrieves an environment variable or returns a fallback value

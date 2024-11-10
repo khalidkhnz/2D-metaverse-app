@@ -28,7 +28,7 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userProfile,err := authService.GetUserFromToken(token)
+	userProfile,err := authService.GetUserFromToken(token,true)
 	if err!=nil {
 		log.Println("WebSocket connection failed: ",err.Error())
 		return

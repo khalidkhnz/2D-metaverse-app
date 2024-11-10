@@ -33,7 +33,7 @@ interface IStateImageType {
   file: File | null;
 }
 
-const HomePage = () => {
+export default function HomePage() {
   const [active, setActive] = useState(0);
   const [showAddAccountForm, setShowAddAccountForm] = useState(false);
   const [image, setImage] = useState<IStateImageType>({
@@ -67,11 +67,14 @@ const HomePage = () => {
     if (active === 0 || idx == 0) {
       console.log("ADD ACCOUNT");
       setShowAddAccountForm(true);
+      gsap.to(".home_add_image_picker", {
+        pointerEvents: "auto",
+      });
       gsap.to(".carousel__btn", {
         opacity: 0,
       });
       gsap.to(".auth__form", {
-        translateY: "-200px",
+        translateY: "-8vh",
         display: "flex",
         opacity: 1,
         pointerEvents: "auto",
@@ -88,7 +91,7 @@ const HomePage = () => {
       duration: 0.3,
     });
     gsap.to("#welcome-carousel", {
-      translateY: "-200px",
+      translateY: "-8vh",
       duration: 0.3,
     });
     gsap.to("#welcome-continue", {
@@ -123,7 +126,7 @@ const HomePage = () => {
       </span>
       <div
         id="welcome-carousel"
-        className="mt-[100px] w-[100%] justify-center py-4"
+        className="mt-[4vh] w-[100%] justify-center py-4"
       >
         <HomeCarousel
           handleImageChange={{
@@ -132,7 +135,7 @@ const HomePage = () => {
           }}
           showAddAccountForm={showAddAccountForm}
           onClick={handleContinue}
-          data={[]}
+          data={showAddAccountForm ? [] : [1, 2, 3, 4, 5, 6, 7]}
           active={active}
           setActive={setActive}
         />
@@ -149,7 +152,7 @@ const HomePage = () => {
       </div>
     </main>
   );
-};
+}
 
 function AuthForm({ className }: { className?: string }) {
   const [isLoginForm, setIsLoginForm] = useState(false);
@@ -276,7 +279,7 @@ function HomeCarousel({
   }, [active]);
 
   return (
-    <Carousel className="mx-auto w-[90%] md:w-[80%]">
+    <Carousel className="mx-auto h-[240px] w-[90%] overflow-visible md:w-[80%] 2xl:h-auto">
       <CarouselContent>
         <CarouselItem
           className={cn({
@@ -287,9 +290,7 @@ function HomeCarousel({
           })}
         >
           <div
-            className={cn(
-              "flex items-center justify-center p-1 py-5 pb-[80px]",
-            )}
+            className={cn("flex items-center justify-center p-1 py-5 pb-[3vh]")}
           >
             <User
               handleImageChange={{
@@ -429,7 +430,7 @@ function User({
                 reader.readAsDataURL(file);
               } else Toast.warning("Invalid image please select another");
             }}
-            className="absolute left-0 top-0 h-full w-full opacity-0"
+            className="home_add_image_picker pointer-events-none absolute left-0 top-0 h-full w-full opacity-0"
           />
         </div>
         <h2 className="cursor-pointer text-[12px] font-light text-white md:text-[1.5vw] lg:text-[20px]">
@@ -471,5 +472,3 @@ function User({
     </HoverCard>
   );
 }
-
-export default HomePage;

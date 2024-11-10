@@ -37,3 +37,17 @@ func UserInContext(w http.ResponseWriter, r *http.Request) (*types.FullProfile) 
 	}
 	return &user
 }
+
+
+func GenerateShortLivedJwtToken(user *types.FullProfile) (string, error) {
+	// Create token with claims
+	claims := jwt.MapClaims{
+		"userID": user.User.ID,
+		"isWS": true,
+		"exp":    GetShortLivedExpirationTime(), 
+	}
+
+	// Create the JWT token with claims and signing method
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString(GetJWTSecret())
+}

@@ -146,3 +146,21 @@ func HandleCurrentUser(w http.ResponseWriter, r *http.Request) error {
 		"data":    user,
 	})
 }
+
+
+func HandleGenerateShortLivedJwtTokenForSocket(w http.ResponseWriter, r *http.Request) error {
+	user := lib.UserInContext(w, r)
+	if user == nil {
+		return fmt.Errorf("unauthorized user")
+	}
+
+	token, err := lib.GenerateShortLivedJwtToken(user)
+	if err != nil {
+		return fmt.Errorf("could not generate token: %v", err)
+	}
+
+	return lib.WriteJSON(w, http.StatusOK, map[string]any{
+		"success": true,
+		"token":   token,
+	})
+}

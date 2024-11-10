@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import TimeHoverCard from "./time-hover-card";
 import Avatar from "./avatar";
 import { Assets } from "@/lib/Assets";
 import Image from "next/image";
@@ -18,6 +17,12 @@ import {
 import { cn } from "@/lib/utils";
 import { useAppContext } from "@/services/app-context";
 import { usePathname } from "next/navigation";
+import dynamic from "next/dynamic";
+
+const TimeHoverCard = dynamic(() => import("@/components/time-hover-card"), {
+  ssr: false,
+  loading: () => <div className="w-[80px]" />,
+});
 
 const Header = () => {
   const pathname = usePathname();

@@ -21,6 +21,7 @@ func (s *APIServer) AuthRouter(router *mux.Router) {
 	router.HandleFunc("/auth/login", makeHTTPHandleFunc(authControllers.HandleLogin)).Methods("POST")
 	// REQUIRES TOKEN
 	authRouter.Handle("/current-user", makeHTTPHandleFunc(authControllers.HandleCurrentUser)).Methods("GET")
+	authRouter.Handle("/ws-token", makeHTTPHandleFunc(authControllers.HandleGenerateShortLivedJwtTokenForSocket)).Methods("GET")
 }
 
 func (s *APIServer) RoleRouter(router *mux.Router){

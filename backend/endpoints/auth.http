@@ -17,14 +17,19 @@ POST http://localhost:4000/api/v1/auth/login HTTP/1.1
 Content-Type: application/json
 
 {
-    "email": "saloni@gmail.com",
-    "password": "saloni@gmail.com"
+    "email": "khankhalid1743@gmail.com",
+    "password": "khankhalid1743@gmail.com"
 }
 
 
 ### CURRENT USER
 GET http://localhost:4000/api/v1/auth/current-user HTTP/1.1
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzE3NTE3MjAsInVzZXJJRCI6IjY3MmYzNTcxOTRjZTE2MTQ4NzkwZDljNCJ9.C2WCHUlTgYATYxKKCippsZXr0exFZpAwgFjIfXGNf70
+
+
+### GENERATE WS TOKEN
+GET http://localhost:4000/api/v1/auth/ws-token HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzE4NjQwMjEsInVzZXJJRCI6IjY3MzA3MDJlZGUwMDVkYmI4ZTIxN2NjOCJ9.iAg5Ms125iBzqGLRtaxooWmkbezF2TpPNBF-whvoAl0
 
 
 ### GET USER BY ID

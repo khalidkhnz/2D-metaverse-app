@@ -1,17 +1,16 @@
 "use client";
 
 import { ILogin, IRegister } from "@/types/auth";
-import { createContext, useContext } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { getMethod, postMethod } from "./ApiInterceptor";
 import { ENDPOINTS } from "@/lib/Endpoints";
 import { Toast } from "@/lib/toast";
 import { capitalize } from "@/lib/utils";
 import useRealTimeLocalStorage from "@/hooks/useRealTimeLocalStorage";
-import { useQuery } from "@tanstack/react-query";
 import { IUser, IUserApiResponse } from "@/types/user";
 
 interface IAppContext {
-  current_user: IUser | undefined;
+  current_user: IUser | null | undefined;
   token: string;
   setToken: (newValue: string, expirationTime?: number) => void;
   handleRegister: (values: IRegister) => void;
@@ -26,17 +25,31 @@ export function AppContextProvider({
   children: React.ReactNode;
 }) {
   const [token, setToken] = useRealTimeLocalStorage<string>("token", "");
-  const current_user = useQuery({
-    queryKey: ["current_user"],
-    queryFn: handleGetAndSetCurrentUser,
-  });
+  const [currentUser, setCurrentUser] = useRealTimeLocalStorage<IUser | null>(
+    "user",
+    null,
+  );
 
-  async function handleGetAndSetCurrentUser(): Promise<IUserApiResponse> {
-    const response = await getMethod(ENDPOINTS.AUTH.CURRENT_USER).catch((err) =>
-      console.log(err),
-    );
-    console.log(response);
-    return response as IUserApiResponse;
+  const runOnce = useRef(false);
+  useEffect(() => {
+    if (runOnce.current && currentUser) return;
+    handleGetAndSetCurrentUser();
+    runOnce.current = true;
+  }, [token]);
+
+  async function handleGetAndSetCurrentUser(): Promise<IUserApiResponse | null> {
+    if (!token) return null;
+    const response = await getMethod<IUserApiResponse>(
+      ENDPOINTS.AUTH.CURRENT_USER,
+    ).catch((err) => console.log(err));
+
+    if (response && response?.success) {
+      setCurrentUser(response?.data?.user);
+      console.log(response);
+      return response as IUserApiResponse;
+    } else {
+      return null;
+    }
   }
 
   async function handleLogin(values: ILogin) {
@@ -48,6 +61,7 @@ export function AppContextProvider({
 
     if (response && response.success) {
       setToken(response?.data?.token, 7 * 24 * 60 * 60 * 1000);
+      await handleGetAndSetCurrentUser();
     }
     if (response && !response.success) {
       Toast.error(capitalize(response?.message?.toLowerCase()));
@@ -78,7 +92,7 @@ export function AppContextProvider({
     <AppContext.Provider
       value={{
         token,
-        current_user: current_user.data?.data?.user,
+        current_user: currentUser,
         setToken,
         handleRegister,
         handleLogin,

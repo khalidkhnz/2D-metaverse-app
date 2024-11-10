@@ -178,7 +178,7 @@ func GetPopulatedUserByUserId(userID primitive.ObjectID) (*types.AuthSchemaPopul
 }
 
 
-func GetUserFromToken(tokenStr string) (*types.FullProfile, error) {
+func GetUserFromToken(tokenStr string, checkWsToken bool) (*types.FullProfile, error) {
 	// Parse and validate token
 	claims := &jwt.MapClaims{}
 	token, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {
@@ -196,6 +196,13 @@ func GetUserFromToken(tokenStr string) (*types.FullProfile, error) {
 	userIDStr, ok := (*claims)["userID"].(string)
 	if !ok {
 		return nil, fmt.Errorf("userID not found in token claims")
+	}
+
+	if checkWsToken {
+		isWS, ok := (*claims)["isWS"].(bool)
+		if !ok || !isWS {
+			return nil, fmt.Errorf("its not a Websocket token")
+		}
 	}
 
 	// Convert userID string to ObjectID

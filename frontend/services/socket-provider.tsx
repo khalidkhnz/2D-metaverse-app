@@ -1,13 +1,17 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { socketService } from "./socket";
 
 export function SocketProvider({ children }: { children: React.ReactNode }) {
+  const hasSetupSocket = useRef(false);
+
   useEffect(() => {
     // Setup socket connection on component mount
-    socketService.setupSocketConnection();
-
+    if (!hasSetupSocket.current) {
+      socketService.setupSocketConnection();
+      hasSetupSocket.current = true;
+    }
     return () => {
       // Ensure socket cleanup if necessary
       socketService.socket?.close();

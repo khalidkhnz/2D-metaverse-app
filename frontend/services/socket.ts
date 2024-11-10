@@ -2,6 +2,8 @@
 
 import { Toast } from "@/lib/toast";
 import { wait } from "@/lib/utils";
+import { getMethod } from "./ApiInterceptor";
+import { ENDPOINTS } from "@/lib/Endpoints";
 
 type ClientEvents =
   | "CLIENT:REMOTE-ADDR"
@@ -16,22 +18,42 @@ class WS {
   public socket!: WebSocket;
   private retryAttempts = 0;
   private maxRetries = 1000;
-  private retryDelay = 5000;
+  private retryDelay = 10000;
   private externalMessageHandlers: ((event: MessageEvent<any>) => void)[] = [];
 
   public setupSocketConnection() {
     this.connectSocket();
   }
 
-  private connectSocket() {
+  private async getWebsocketToken(): Promise<string> {
+    const response = await getMethod<{ success: boolean; token: string }>(
+      ENDPOINTS.AUTH.GENERATE_WS_TOKEN,
+    ).catch((err) => console.log(err));
+    if (response?.success) {
+      return response?.token;
+    }
+    return "";
+  }
+
+  private async connectSocket() {
     const token = localStorage.getItem("token")
       ? JSON.parse(localStorage.getItem("token") || "")
       : null;
 
-    if (!token?.value) return;
+    if (!token?.value) {
+      this.retryConnection();
+      return;
+    }
+
+    const wsToken = await this.getWebsocketToken();
+
+    if (!wsToken) {
+      this.retryConnection();
+      return;
+    }
 
     this.socket = new WebSocket(
-      `ws://localhost:4000/ws${token?.value ? `?token=${token?.value}` : ""}`,
+      `ws://localhost:4000/ws${wsToken ? `?token=${wsToken}` : ""}`,
     );
     this.socketConnectionEvents({
       handleSocketEvents: this.handleSocketEvents,
@@ -39,15 +61,16 @@ class WS {
     });
   }
 
-  private retryConnection() {
+  private async retryConnection() {
     if (this.retryAttempts < this.maxRetries) {
       this.retryAttempts++;
       console.log(`Attempting to reconnect... (Attempt ${this.retryAttempts})`);
-      Toast.info(`Attempting to reconnect... (Attempt ${this.retryAttempts})`);
-      wait(this.retryDelay).then(() => this.connectSocket());
+      // Toast.info(`Attempting to reconnect... (Attempt ${this.retryAttempts})`);
+      await wait(this.retryDelay);
+      this.connectSocket();
     } else {
       console.error("Max retry attempts reached. Could not reconnect.");
-      Toast.error("Unable to reconnect to the server.");
+      // Toast.error("Unable to reconnect to the server.");
     }
   }
 
