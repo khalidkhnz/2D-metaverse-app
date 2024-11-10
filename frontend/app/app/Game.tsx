@@ -31,7 +31,7 @@ const Game: React.FC = () => {
         // Enable physics for the ball
         this.physics.add.existing(this.ball);
         (this.ball.body as Phaser.Physics.Arcade.Body).setCollideWorldBounds(
-          true
+          true,
         );
 
         // Set up arrow keys for movement
@@ -88,7 +88,7 @@ const Game: React.FC = () => {
         gameRef.current = null;
       }
     };
-  }, []);
+  }, [windowHeight, windowWidth]);
 
   return <div id="phaser-game" />;
 };

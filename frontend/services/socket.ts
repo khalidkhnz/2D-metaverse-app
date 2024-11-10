@@ -24,7 +24,15 @@ class WS {
   }
 
   private connectSocket() {
-    this.socket = new WebSocket("ws://localhost:4000/ws");
+    const token = localStorage.getItem("token")
+      ? JSON.parse(localStorage.getItem("token") || "")
+      : null;
+
+    if (!token?.value) return;
+
+    this.socket = new WebSocket(
+      `ws://localhost:4000/ws${token?.value ? `?token=${token?.value}` : ""}`,
+    );
     this.socketConnectionEvents({
       handleSocketEvents: this.handleSocketEvents,
       onConnectSend: { type: "CONNECT", payload: { userId: "123123" } },

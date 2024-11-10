@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/khalidkhnz/2D-metaverse-app/backend/lib"
 	"github.com/khalidkhnz/2D-metaverse-app/backend/schema"
 	permissionService "github.com/khalidkhnz/2D-metaverse-app/backend/services/permission"
@@ -174,4 +175,40 @@ func GetPopulatedUserByUserId(userID primitive.ObjectID) (*types.AuthSchemaPopul
 	}
 
 	return &populatedAuth, nil
+}
+
+
+func GetUserFromToken(tokenStr string) (*types.FullProfile, error) {
+	// Parse and validate token
+	claims := &jwt.MapClaims{}
+	token, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return lib.GetJWTSecret(), nil
+	})
+
+	if err != nil || !token.Valid {
+		return nil, fmt.Errorf("invalid or expired token")
+	}
+
+	// Extract userID from token claims
+	userIDStr, ok := (*claims)["userID"].(string)
+	if !ok {
+		return nil, fmt.Errorf("userID not found in token claims")
+	}
+
+	// Convert userID string to ObjectID
+	userID, err := primitive.ObjectIDFromHex(userIDStr)
+	if err != nil {
+		return nil, fmt.Errorf("invalid userID format")
+	}
+
+	// Fetch user data from database
+	populatedUser, err := GetPopulatedUserByUserId(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &types.FullProfile{User: populatedUser}, nil
 }

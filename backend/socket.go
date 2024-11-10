@@ -2,10 +2,12 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
 	"github.com/gorilla/websocket"
+	authService "github.com/khalidkhnz/2D-metaverse-app/backend/services/auth"
 )
 
 var Upgrader = websocket.Upgrader{
@@ -19,6 +21,21 @@ var Upgrader = websocket.Upgrader{
 var SOCKET_CONNECTIONS = make(map[*websocket.Conn]string)
 
 func WSHandler(w http.ResponseWriter, r *http.Request) {
+
+	token := r.URL.Query().Get("token")
+	if token=="" {
+		log.Println("WebSocket connection failed token not found")
+		return
+	}
+
+	userProfile,err := authService.GetUserFromToken(token)
+	if err!=nil {
+		log.Println("WebSocket connection failed: ",err.Error())
+		return
+	}
+	// GOT THE USER
+	fmt.Println(userProfile.User.Email)
+
 	conn, err := Upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println("WebSocket connection to 'ws://localhost:4000/ws' failed: ", err)

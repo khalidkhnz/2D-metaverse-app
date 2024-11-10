@@ -91,10 +91,10 @@ func (s *APIServer) Run(runOptions RunOptions)  {
 		AllowCredentials: true,
 	}))
 		
-	// API VER. PREFIX
+	// API VER. PREFIX "/api/v1"
 	apiRouter := router.PathPrefix(lib.GetAPIPrefix()).Subrouter()
 	
-	// WEBSOCKET CONN "/api/v1"
+	// WEBSOCKET CONN
 	router.HandleFunc("/ws", WSHandler).Methods("GET")
 	
 	// API ROUTERS
