@@ -7,11 +7,11 @@ import { ENDPOINTS } from "@/lib/Endpoints";
 import { Toast } from "@/lib/toast";
 import { capitalize } from "@/lib/utils";
 import useRealTimeLocalStorage from "@/hooks/useRealTimeLocalStorage";
-import { useQuery, UseQueryResult } from "@tanstack/react-query";
-import { IUserApiResponse } from "@/types/user";
+import { useQuery } from "@tanstack/react-query";
+import { IUser, IUserApiResponse } from "@/types/user";
 
 interface IAppContext {
-  current_user: UseQueryResult<IUserApiResponse, Error>;
+  current_user: IUser | undefined;
   token: string;
   setToken: (newValue: string, expirationTime?: number) => void;
   handleRegister: (values: IRegister) => void;
@@ -76,7 +76,13 @@ export function AppContextProvider({
 
   return (
     <AppContext.Provider
-      value={{ token, current_user, setToken, handleRegister, handleLogin }}
+      value={{
+        token,
+        current_user: current_user.data?.data?.user,
+        setToken,
+        handleRegister,
+        handleLogin,
+      }}
     >
       {children}
     </AppContext.Provider>

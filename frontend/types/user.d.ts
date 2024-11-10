@@ -1,11 +1,11 @@
 export interface IUserApiResponse {
   data: {
-    user: User;
+    user: IUser;
   };
   success: boolean;
 }
 
-interface User {
+export interface IUser {
   _id: string;
   fullName: string;
   email: string;

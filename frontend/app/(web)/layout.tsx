@@ -1,4 +1,5 @@
 import { AuroraBackground } from "@/components/aurora-background";
+import Header from "@/components/Header";
 import React from "react";
 
 type Props = {
@@ -6,7 +7,12 @@ type Props = {
 };
 
 const Layout = ({ children }: Props) => {
-  return <AuroraBackground>{children}</AuroraBackground>;
+  return (
+    <AuroraBackground>
+      {children}
+      <Header />
+    </AuroraBackground>
+  );
 };
 
 export default Layout;

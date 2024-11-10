@@ -109,7 +109,6 @@ const HomePage = () => {
         "relative flex h-screen w-full flex-col items-center justify-center bg-transparent",
       )}
     >
-      <TimeHoverCard />
       <h1
         id="welcome-text"
         className="text-[30px] font-light text-white md:text-[4vw] 2xl:text-[64px]"
@@ -467,50 +466,6 @@ function User({
       <HoverCardContent className="mt-4 flex items-center justify-center border-none bg-white/20 p-2 backdrop-blur-md">
         <span className="overflow-hidden overflow-ellipsis text-nowrap text-sm font-light text-white">
           eternalkhalidkhnz@gmail.com
-        </span>
-      </HoverCardContent>
-    </HoverCard>
-  );
-}
-
-function TimeHoverCard() {
-  const [currentTime, setCurrentTime] = useState(
-    new Date().toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-    }),
-  );
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTime(
-        new Date().toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-          // second: "2-digit",
-          hour12: true,
-        }),
-      );
-    }, 60000);
-    return () => clearInterval(interval);
-  }, []);
-
-  return (
-    <HoverCard>
-      <HoverCardTrigger className="absolute right-6 top-4 flex min-w-[200px] cursor-pointer items-center justify-center">
-        <span className="text-[1.9vw] font-light uppercase text-white">
-          {currentTime}
-        </span>
-      </HoverCardTrigger>
-      <HoverCardContent
-        className={cn(
-          "mx-2 flex items-center justify-center border-[#050b1c] bg-[#050b1c]",
-          "border-none bg-white/20 backdrop-blur-md",
-        )}
-      >
-        <span className="text-[16px] font-light text-white">
-          {`Today is ${new Date().toLocaleDateString()} ${new Date().toLocaleDateString([], { weekday: "long" })}`}
         </span>
       </HoverCardContent>
     </HoverCard>
