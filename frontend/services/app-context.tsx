@@ -10,6 +10,7 @@ import useRealTimeLocalStorage from "@/hooks/useRealTimeLocalStorage";
 import { IUser, IUserApiResponse } from "@/types/user";
 import { socketService } from "./socket";
 import { useRouter } from "next/navigation";
+import gsap from "gsap";
 
 interface IAppContext {
   current_user: IUser | null | undefined;
@@ -66,6 +67,10 @@ export function AppContextProvider({
       setToken(response?.data?.token, 7 * 24 * 60 * 60 * 1000);
       setCurrentUser(response?.data?.user);
       socketService.setupSocketConnection();
+      gsap.to(".home-main", {
+        pointerEvents: "none",
+        opacity: 0,
+      });
       Toast.success("Logged in successfully");
     }
     if (response && !response.success) {

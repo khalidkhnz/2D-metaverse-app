@@ -28,6 +28,7 @@ import { FormsBody } from "@/lib/Forms";
 import { Toast } from "@/lib/toast";
 import Image from "next/image";
 import { IUser } from "@/types/user";
+import { useRouter } from "next/navigation";
 
 interface IStateImageType {
   result: string | ArrayBuffer | null | undefined;
@@ -36,6 +37,7 @@ interface IStateImageType {
 
 export default function HomePage() {
   const { current_user } = useAppContext();
+  const router = useRouter();
   const [active, setActive] = useState(0);
   const [showAddAccountForm, setShowAddAccountForm] = useState(false);
   const [image, setImage] = useState<IStateImageType>({
@@ -82,6 +84,10 @@ export default function HomePage() {
         pointerEvents: "auto",
       });
     } else {
+      handleLoginAnimation();
+      setTimeout(() => {
+        router.push("/explore");
+      }, 2000);
       console.log("LOGGIN IN PREVIOUS ACCOUNT");
     }
   }
@@ -172,20 +178,6 @@ function AuthForm({ className }: { className?: string }) {
     validationSchema: Y.login,
   });
 
-  useEffect(() => {
-    if (isLoginForm) {
-      gsap.to("#welcome-carousel", {
-        opacity: 0,
-        pointerEvents: "none",
-      });
-    } else {
-      gsap.to("#welcome-carousel", {
-        opacity: 1,
-        pointerEvents: "auto",
-      });
-    }
-  }, [isLoginForm]);
-
   const LoginFormMap = [
     {
       name: "email",
@@ -224,7 +216,28 @@ function AuthForm({ className }: { className?: string }) {
         );
       })}
       <span
-        onClick={() => setIsLoginForm((prev) => !prev)}
+        onClick={() => {
+          setIsLoginForm((prev) => {
+            if (!prev) {
+              gsap.to("#welcome-carousel", {
+                opacity: 0,
+                pointerEvents: "none",
+              });
+              gsap.to(".home_add_image_picker", {
+                pointerEvents: "none",
+              });
+            } else {
+              gsap.to("#welcome-carousel", {
+                opacity: 1,
+                pointerEvents: "auto",
+              });
+              gsap.to(".home_add_image_picker", {
+                pointerEvents: "auto",
+              });
+            }
+            return !prev;
+          });
+        }}
         className="cursor-pointer text-sm font-normal text-white/70"
       >
         {isLoginForm ? "Dont have Account? Register." : "Have Account? Login."}
@@ -263,6 +276,7 @@ function HomeCarousel({
   active: number;
   setActive: React.Dispatch<React.SetStateAction<number>>;
 }) {
+  const router = useRouter();
   const LENGHT = data?.length + 1;
 
   useEffect(() => {
@@ -335,10 +349,15 @@ function HomeCarousel({
                   setActive(index + 1);
                   if (onClick) {
                     onClick(index + 1);
+                    handleLoginAnimation();
+                    setTimeout(() => {
+                      router.push("/explore");
+                    }, 2000);
                   }
                 }}
                 onMouseEnter={() => setActive(index + 1)}
-                name={`${user.fullName}`}
+                name={`${user?.fullName}`}
+                email={`${user?.email}`}
                 className={
                   index + 1 === active
                     ? "active-user-card"
@@ -372,12 +391,14 @@ function User({
   onClick,
   onMouseEnter,
   variant,
+  email,
 }: {
   handleImageChange?: {
     image: IStateImageType;
     setImage: React.Dispatch<React.SetStateAction<IStateImageType>>;
   };
   name?: string;
+  email?: string;
   className?: string;
   avatarClassName?: string;
   active?: boolean;
@@ -468,9 +489,16 @@ function User({
       </HoverCardTrigger>
       <HoverCardContent className="mt-4 flex items-center justify-center border-none bg-white/20 p-2 backdrop-blur-md">
         <span className="overflow-hidden overflow-ellipsis text-nowrap text-sm font-light text-white">
-          eternalkhalidkhnz@gmail.com
+          {email}
         </span>
       </HoverCardContent>
     </HoverCard>
   );
+}
+
+function handleLoginAnimation() {
+  gsap.to(".home-main", {
+    pointerEvents: "none",
+    opacity: 0,
+  });
 }
