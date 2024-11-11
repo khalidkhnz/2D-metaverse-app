@@ -51,3 +51,14 @@ func GenerateShortLivedJwtToken(user *types.FullProfile) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString(GetJWTSecret())
 }
+
+
+
+func Contains(slice []string, item string) bool {
+	for _, str := range slice {
+		if str == item {
+			return true
+		}
+	}
+	return false
+}

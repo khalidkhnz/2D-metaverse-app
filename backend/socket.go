@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/websocket"
+	"github.com/khalidkhnz/2D-metaverse-app/backend/lib"
 	authService "github.com/khalidkhnz/2D-metaverse-app/backend/services/auth"
 )
 
@@ -89,6 +90,22 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 }
+
+
+func emitEventTo(socketIds []string, eventType string, payload map[string]any) {
+	for socketId, conn := range SOCKET_CONNECTIONS {
+		if lib.Contains(socketIds, socketId) {
+			err := conn.WriteJSON(map[string]any{
+				"type":    eventType,
+				"payload": payload,
+			})
+			log.Println(err.Error())
+		}
+	}
+}
+
+
+
 
 
 // Below is the JavaScript code to connect to the WebSocket server
