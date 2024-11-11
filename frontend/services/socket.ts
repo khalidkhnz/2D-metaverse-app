@@ -1,6 +1,5 @@
 "use client";
 
-import { Toast } from "@/lib/toast";
 import { wait } from "@/lib/utils";
 import { getMethod } from "./ApiInterceptor";
 import { ENDPOINTS } from "@/lib/Endpoints";
