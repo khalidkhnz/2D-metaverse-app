@@ -5,10 +5,11 @@ import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { getMethod, postMethod } from "./ApiInterceptor";
 import { ENDPOINTS } from "@/lib/Endpoints";
 import { Toast } from "@/lib/toast";
-import { capitalize } from "@/lib/utils";
+import { capitalize, wait } from "@/lib/utils";
 import useRealTimeLocalStorage from "@/hooks/useRealTimeLocalStorage";
 import { IUser, IUserApiResponse } from "@/types/user";
 import { socketService } from "./socket";
+import { useRouter } from "next/navigation";
 
 interface IAppContext {
   current_user: IUser | null | undefined;
@@ -26,6 +27,7 @@ export function AppContextProvider({
 }: {
   children: React.ReactNode;
 }) {
+  const router = useRouter();
   const [token, setToken] = useRealTimeLocalStorage<string | null>("token", "");
   const [currentUser, setCurrentUser] = useRealTimeLocalStorage<IUser | null>(
     "user",
@@ -63,6 +65,7 @@ export function AppContextProvider({
     if (response && response.success && response.data) {
       setToken(response?.data?.token, 7 * 24 * 60 * 60 * 1000);
       setCurrentUser(response?.data?.user);
+      socketService.setupSocketConnection();
       Toast.success("Logged in successfully");
     }
     if (response && !response.success) {
@@ -96,12 +99,12 @@ export function AppContextProvider({
       // Clear the token and current user
       setToken(null);
       setCurrentUser(null);
-
+      await wait(1000);
       // Close the socket connection if it exists
       socketService.socket?.close();
 
       Toast.success("Logged out successfully");
-      window.location.href = "/";
+      router.push("/");
     } catch (error) {
       console.log(error);
       Toast.error("An error occurred during logout");

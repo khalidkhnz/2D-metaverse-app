@@ -2,12 +2,14 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
 	"github.com/gorilla/websocket"
 	"github.com/khalidkhnz/2D-metaverse-app/backend/lib"
 	authService "github.com/khalidkhnz/2D-metaverse-app/backend/services/auth"
+	"github.com/khalidkhnz/2D-metaverse-app/backend/types"
 )
 
 var Upgrader = websocket.Upgrader{
@@ -19,6 +21,7 @@ var Upgrader = websocket.Upgrader{
 }
 
 var SOCKET_CONNECTIONS = make(map[string]*websocket.Conn)
+
 
 func WSHandler(w http.ResponseWriter, r *http.Request) {
 
@@ -59,40 +62,66 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 	for {
 		_, message, err := conn.ReadMessage()
 		if err != nil {
-			log.Println("Error reading message:", err)
-			break
+			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
+				log.Println("Unexpected WebSocket closure:", err)
+			} else {
+				log.Println("WebSocket closed:", err)
+			}
+			break // Exit the loop on close
 		}
-
+	
 		// Try to unmarshal the message as JSON
 		var jsonData map[string]any
 		if err := json.Unmarshal(message, &jsonData); err == nil {
-			
-			// If message is JSON
-			log.Printf("Received JSON message from %s: %+v\n", conn.RemoteAddr(), jsonData)
-			err = conn.WriteJSON(map[string]any{
-				"type": "BROADCAST",
-				"payload": jsonData,
-			})
-
+			// If message is JSON, handle it
+			err = handleSocketEvents(jsonData, conn, userProfile)
+			if err != nil {
+				log.Printf("Error handling event from %s : %s \n", userProfile.User.FullName, err)
+				// Optionally, notify the client of this specific error
+				conn.WriteJSON(map[string]any{
+					"type":    "ERROR",
+					"payload": map[string]string{"message": err.Error()},
+				})
+			}
 		} else {
-
-			// If message is not JSON, treat it as a string
-			log.Printf("Received string message from %s: %s\n", conn.RemoteAddr(), string(message))
+			// If message is not JSON, send error response to client and continue
+			log.Printf("Received non-JSON message from %s: %s\n", conn.RemoteAddr(), string(message))
 			err = conn.WriteJSON(map[string]any{
-				"type": "ERROR",
-				"payload": map[string]string{"message":"string message is not allowed"},
+				"type":    "ERROR",
+				"payload": map[string]string{"message": "Only JSON messages are allowed"},
 			})
-		}
-
-		if err != nil {
-			log.Println("Error writing message:", err)
-			break
+			if err != nil {
+				log.Println("Error sending error response:", err)
+				break // Exit if unable to communicate with the client
+			}
 		}
 	}
+	
 }
 
+func handleSocketEvents(data map[string]any, conn *websocket.Conn, userProfile *types.FullProfile) (error) {
+	log.Printf("Recv JSON from %s: \n %+v\n", userProfile.User.FullName, data)
 
-func emitEventTo(socketIds []string, eventType string, payload map[string]any) {
+	if data["type"] == "BROADCAST" {
+		err := conn.WriteJSON(map[string]any{
+			"type": "BROADCAST",
+			"payload": data,
+		})
+		return err
+	}
+
+	if data["type"] == "DISCONNECT" {
+		RemoveSocketConnection(userProfile.User.ID.Hex())
+	}
+	
+	return fmt.Errorf("invalid event")
+}
+
+func RemoveSocketConnection(id string) {
+    delete(SOCKET_CONNECTIONS, id)
+}
+
+func EmitEventTo(socketIds []string, eventType string, payload map[string]any) {
 	for socketId, conn := range SOCKET_CONNECTIONS {
 		if lib.Contains(socketIds, socketId) {
 			err := conn.WriteJSON(map[string]any{
