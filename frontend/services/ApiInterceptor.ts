@@ -1,17 +1,27 @@
-type RequestHandler = (request: { input: RequestInfo; init?: RequestInit }) => {
-  input: RequestInfo;
-  init?: RequestInit;
-};
-type ResponseHandler = (response: Response) => Response;
-
-interface InterceptorHandler<T> {
-  use: (handler: T) => void;
-  handler: T;
+interface Interceptor<T> {
+  use(handler: (input: T) => T): void;
+  handler: (input: T) => T;
 }
 
-export interface FetchInterceptor {
-  request: InterceptorHandler<RequestHandler>;
-  response: InterceptorHandler<ResponseHandler>;
+interface RequestInterceptor {
+  input: RequestInfo;
+  init?: RequestInit;
+}
+
+interface ResponseInterceptor {
+  ok: boolean;
+  status: number;
+  statusText: string;
+  headers: Headers;
+  text: () => Promise<string>;
+  json: () => Promise<any>;
+}
+
+type ApiResponse<T = unknown> = T;
+
+interface FetchInterceptor {
+  request: Interceptor<RequestInterceptor>;
+  response: Interceptor<ResponseInterceptor>;
 }
 
 async function createInterceptor(): Promise<FetchInterceptor> {
@@ -45,22 +55,24 @@ async function createInterceptor(): Promise<FetchInterceptor> {
   return interceptors;
 }
 
-// Enhanced fetch function, uses the interceptor
 async function enhancedFetch(
   input: RequestInfo,
   init?: RequestInit,
-): Promise<Response> {
+): Promise<any> {
   const interceptor = await createInterceptor(); // Wait for interceptor creation
   const modifiedRequest = interceptor.request.handler({ input, init });
   const response = await fetch(modifiedRequest.input, modifiedRequest.init);
   return interceptor.response.handler(response);
 }
 
-// Define custom fetch methods for API calls
+//////////////////////////
+/* CUSTOM FETCH METHODS */
+//////////////////////////
+
 export async function getMethod<T>(
   url: string,
   options?: RequestInit,
-): Promise<T> {
+): Promise<ApiResponse<T>> {
   return enhancedFetch(url, { ...options, method: "GET" }).then((r) =>
     r.json(),
   );
@@ -70,7 +82,7 @@ export async function postMethod<T>(
   url: string,
   data?: any,
   options?: RequestInit,
-): Promise<T> {
+): Promise<ApiResponse<T>> {
   return enhancedFetch(url, {
     ...options,
     method: "POST",
@@ -86,7 +98,7 @@ export async function putMethod<T>(
   url: string,
   data?: any,
   options?: RequestInit,
-): Promise<T> {
+): Promise<ApiResponse<T>> {
   return enhancedFetch(url, {
     ...options,
     method: "PUT",
@@ -102,7 +114,7 @@ export async function patchMethod<T>(
   url: string,
   data?: any,
   options?: RequestInit,
-): Promise<T> {
+): Promise<ApiResponse<T>> {
   return enhancedFetch(url, {
     ...options,
     method: "PATCH",
@@ -117,12 +129,12 @@ export async function patchMethod<T>(
 export async function deleteMethod<T>(
   url: string,
   options?: RequestInit,
-): Promise<T> {
+): Promise<ApiResponse<T>> {
   return enhancedFetch(url, { ...options, method: "DELETE" }).then((r) =>
     r.json(),
   );
 }
 
-export async function getSwrMethod<T>(url: string): Promise<T> {
+export async function getSwrMethod<T>(url: string): Promise<ApiResponse<T>> {
   return await fetch(url).then((r) => r.json());
 }

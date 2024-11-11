@@ -8,13 +8,15 @@ import { Toast } from "@/lib/toast";
 import { capitalize } from "@/lib/utils";
 import useRealTimeLocalStorage from "@/hooks/useRealTimeLocalStorage";
 import { IUser, IUserApiResponse } from "@/types/user";
+import { socketService } from "./socket";
 
 interface IAppContext {
   current_user: IUser | null | undefined;
-  token: string;
+  token: string | null;
   setToken: (newValue: string, expirationTime?: number) => void;
   handleRegister: (values: IRegister) => void;
   handleLogin: (values: ILogin) => void;
+  handleLogout: () => void;
 }
 
 const AppContext = createContext<IAppContext | null>(null);
@@ -24,7 +26,7 @@ export function AppContextProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [token, setToken] = useRealTimeLocalStorage<string>("token", "");
+  const [token, setToken] = useRealTimeLocalStorage<string | null>("token", "");
   const [currentUser, setCurrentUser] = useRealTimeLocalStorage<IUser | null>(
     "user",
     null,
@@ -45,7 +47,6 @@ export function AppContextProvider({
 
     if (response && response?.success) {
       setCurrentUser(response?.data?.user);
-      console.log(response);
       return response as IUserApiResponse;
     } else {
       return null;
@@ -55,13 +56,14 @@ export function AppContextProvider({
   async function handleLogin(values: ILogin) {
     const response = await postMethod<{
       success?: boolean;
-      data?: any;
+      data?: { token: string; user: IUser };
       message?: string;
     }>(ENDPOINTS.AUTH.LOGIN_ACCOUNT, values).catch((err) => console.log(err));
 
-    if (response && response.success) {
+    if (response && response.success && response.data) {
       setToken(response?.data?.token, 7 * 24 * 60 * 60 * 1000);
-      await handleGetAndSetCurrentUser();
+      setCurrentUser(response?.data?.user);
+      Toast.success("Logged in successfully");
     }
     if (response && !response.success) {
       Toast.error(capitalize(response?.message?.toLowerCase()));
@@ -78,6 +80,7 @@ export function AppContextProvider({
     );
 
     if (response && response.success) {
+      Toast.success("Registered in successfully");
       await handleLogin({
         email: values.email,
         password: values.password,
@@ -85,6 +88,23 @@ export function AppContextProvider({
     }
     if (response && !response.success) {
       Toast.error(capitalize(response?.message?.toLowerCase()));
+    }
+  }
+
+  async function handleLogout() {
+    try {
+      // Clear the token and current user
+      setToken(null);
+      setCurrentUser(null);
+
+      // Close the socket connection if it exists
+      socketService.socket?.close();
+
+      Toast.success("Logged out successfully");
+      window.location.href = "/";
+    } catch (error) {
+      console.log(error);
+      Toast.error("An error occurred during logout");
     }
   }
 
@@ -96,6 +116,7 @@ export function AppContextProvider({
         setToken,
         handleRegister,
         handleLogin,
+        handleLogout,
       }}
     >
       {children}

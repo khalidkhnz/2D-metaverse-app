@@ -27,6 +27,7 @@ import { Y } from "@/lib/Y";
 import { FormsBody } from "@/lib/Forms";
 import { Toast } from "@/lib/toast";
 import Image from "next/image";
+import { IUser } from "@/types/user";
 
 interface IStateImageType {
   result: string | ArrayBuffer | null | undefined;
@@ -34,6 +35,7 @@ interface IStateImageType {
 }
 
 export default function HomePage() {
+  const { current_user } = useAppContext();
   const [active, setActive] = useState(0);
   const [showAddAccountForm, setShowAddAccountForm] = useState(false);
   const [image, setImage] = useState<IStateImageType>({
@@ -135,7 +137,7 @@ export default function HomePage() {
           }}
           showAddAccountForm={showAddAccountForm}
           onClick={handleContinue}
-          data={showAddAccountForm ? [] : [1, 2, 3, 4, 5, 6, 7]}
+          data={showAddAccountForm ? [] : current_user ? [current_user] : []}
           active={active}
           setActive={setActive}
         />
@@ -247,7 +249,7 @@ function HomeCarousel({
   handleImageChange: { image, setImage },
   active = 0,
   setActive,
-  data,
+  data = [],
   onClick,
   showAddAccountForm,
 }: {
@@ -257,11 +259,11 @@ function HomeCarousel({
   };
   showAddAccountForm?: boolean;
   onClick?: (idx: number) => void;
-  data?: any[];
+  data?: IUser[];
   active: number;
   setActive: React.Dispatch<React.SetStateAction<number>>;
 }) {
-  const LENGHT = data?.length || 0;
+  const LENGHT = data?.length + 1;
 
   useEffect(() => {
     gsap.to(`.active-user-card`, {
@@ -283,7 +285,6 @@ function HomeCarousel({
       <CarouselContent>
         <CarouselItem
           className={cn({
-            "basis-1/1": LENGHT === 1,
             "basis-1/2": LENGHT === 2,
             "basis-1/3": LENGHT >= 3 && LENGHT < 5,
             "basis-1/3 lg:basis-1/5": LENGHT >= 5,
@@ -315,11 +316,12 @@ function HomeCarousel({
             />
           </div>
         </CarouselItem>
-        {Array.from({ length: LENGHT }).map((_, index) => (
+        {data?.map((user, index) => (
           <CarouselItem
             key={index + 1}
             className={cn({
-              "basis-1/3": LENGHT < 5,
+              "basis-1/2": LENGHT === 2,
+              "basis-1/3": LENGHT >= 3 && LENGHT < 5,
               "basis-1/3 lg:basis-1/5": LENGHT >= 5,
             })}
           >
@@ -336,7 +338,7 @@ function HomeCarousel({
                   }
                 }}
                 onMouseEnter={() => setActive(index + 1)}
-                name={`khalid.khnz ${index + 1}`}
+                name={`${user.fullName}`}
                 className={
                   index + 1 === active
                     ? "active-user-card"

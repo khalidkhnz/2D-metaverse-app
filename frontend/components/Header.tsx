@@ -52,7 +52,8 @@ function AvatarDropDownMenu() {
     name: "ONLINE",
     icon: <div className="h-3 w-3 rounded-full bg-green-600" />,
   });
-  const { current_user } = useAppContext();
+
+  const { current_user, handleLogout } = useAppContext();
 
   const statuses = {
     ONLINE: {
@@ -93,6 +94,7 @@ function AvatarDropDownMenu() {
     { name: "Settings" },
     {
       name: "Logout",
+      onClick: handleLogout,
       className:
         "focus:bg-red-500 font-normal focus:text-white backdrop-blur-md",
     },
@@ -159,6 +161,7 @@ function AvatarDropDownMenu() {
                 option.className,
               )}
               key={`option-${idx}`}
+              onClick={option.onClick}
             >
               <span>{option.name}</span>
               {option?.icon && option.icon}

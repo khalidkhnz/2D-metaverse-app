@@ -63,9 +63,14 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) error {
 			return fmt.Errorf("could not generate JWT token: %v", err)
 		}
 
+		user,err := authService.GetPopulatedUserByUserId(data.ID)
+		if err!=nil {
+			return fmt.Errorf(err.Error())
+		}
+
 		return lib.WriteJSON(w, http.StatusOK, map[string]any{
 			"success":true,
-			"data": map[string]any{"auth":map[string]any{"_id":data.ID,"fullname":data.FullName,"email":data.Email}, "token":token},
+			"data": map[string]any{"user":user, "token":token},
 			"message": "Logged In",
 		})
 	}

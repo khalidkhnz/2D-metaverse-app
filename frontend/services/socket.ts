@@ -17,8 +17,8 @@ type ServerEvents =
 class WS {
   public socket!: WebSocket;
   private retryAttempts = 0;
-  private maxRetries = 1000;
-  private retryDelay = 10000;
+  private maxRetries = Infinity;
+  private retryDelay = 5000;
   private externalMessageHandlers: ((event: MessageEvent<any>) => void)[] = [];
 
   public setupSocketConnection() {
@@ -36,6 +36,11 @@ class WS {
   }
 
   private async connectSocket() {
+    if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+      console.log("WebSocket is already connected.");
+      return;
+    }
+
     const token = localStorage.getItem("token")
       ? JSON.parse(localStorage.getItem("token") || "")
       : null;

@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -18,7 +17,7 @@ var Upgrader = websocket.Upgrader{
 	},
 }
 
-var SOCKET_CONNECTIONS = make(map[*websocket.Conn]string)
+var SOCKET_CONNECTIONS = make(map[string]*websocket.Conn)
 
 func WSHandler(w http.ResponseWriter, r *http.Request) {
 
@@ -33,18 +32,17 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println("WebSocket connection failed: ",err.Error())
 		return
 	}
-	// GOT THE USER
-	fmt.Println(userProfile.User.Email)
 
 	conn, err := Upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println("WebSocket connection to 'ws://localhost:4000/ws' failed: ", err)
 		return
 	}
-	log.Printf("New WebSocket connection from %s\n", conn.RemoteAddr())
+
+	log.Printf("New WebSocket connection from %s\n with Auth_Id: %s\n", conn.RemoteAddr(),userProfile.User.ID.Hex())
 
 	// Store the new connection in SOCKET_CONNECTIONS
-	SOCKET_CONNECTIONS[conn] = conn.RemoteAddr().String()
+	SOCKET_CONNECTIONS[userProfile.User.ID.Hex()] = conn
 
 	// Emit "REMOTE-ADDR" event to the new connection
 	err = conn.WriteJSON(map[string]any{
@@ -67,21 +65,23 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 		// Try to unmarshal the message as JSON
 		var jsonData map[string]any
 		if err := json.Unmarshal(message, &jsonData); err == nil {
+			
 			// If message is JSON
 			log.Printf("Received JSON message from %s: %+v\n", conn.RemoteAddr(), jsonData)
 			err = conn.WriteJSON(map[string]any{
-				"success": true,
-				"data":    jsonData,
+				"type": "BROADCAST",
+				"payload": jsonData,
 			})
+
 		} else {
+
 			// If message is not JSON, treat it as a string
 			log.Printf("Received string message from %s: %s\n", conn.RemoteAddr(), string(message))
 			err = conn.WriteJSON(map[string]any{
-				"success": true,
-				"data":    string(message),
+				"type": "ERROR",
+				"payload": map[string]string{"message":"string message is not allowed"},
 			})
 		}
-
 
 		if err != nil {
 			log.Println("Error writing message:", err)

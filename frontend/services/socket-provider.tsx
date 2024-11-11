@@ -1,22 +1,22 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { socketService } from "./socket";
+import { useAppContext } from "./app-context";
 
 export function SocketProvider({ children }: { children: React.ReactNode }) {
-  const hasSetupSocket = useRef(false);
+  const { current_user, token } = useAppContext();
 
   useEffect(() => {
     // Setup socket connection on component mount
-    if (!hasSetupSocket.current) {
+    if (current_user && token) {
       socketService.setupSocketConnection();
-      hasSetupSocket.current = true;
     }
     return () => {
       // Ensure socket cleanup if necessary
       socketService.socket?.close();
     };
-  }, []);
+  }, [current_user, token]);
 
   return children;
 }
