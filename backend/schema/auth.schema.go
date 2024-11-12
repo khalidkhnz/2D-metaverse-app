@@ -15,7 +15,8 @@ type AuthSchema struct {
 	Password    string               `bson:"password" json:"password"`
 	RoleId      primitive.ObjectID   `bson:"roleId" json:"roleId"`
 	Permissions []primitive.ObjectID `bson:"permissions" json:"permissions"`
-	CreatedAt   time.Time            `bson:"createdAt" json:"createdAt"`
+	SpaceIds    []primitive.ObjectID `bson:"spaceIds" json:"spaceIds"`
+ 	CreatedAt   time.Time            `bson:"createdAt" json:"createdAt"`
 	UpdatedAt   time.Time            `bson:"updatedAt" json:"updatedAt"`
 }
 
@@ -40,6 +41,9 @@ func (a *AuthSchema) Validate() error {
 	}
 	if a.Permissions == nil {
 		return errors.New("missing field permissions Array")
+	}
+	if a.SpaceIds == nil {
+		a.SpaceIds = []primitive.ObjectID{}
 	}
 	return nil
 }

@@ -7,6 +7,7 @@ import (
 	authControllers "github.com/khalidkhnz/2D-metaverse-app/backend/controllers/auth"
 	permissionController "github.com/khalidkhnz/2D-metaverse-app/backend/controllers/permission"
 	roleController "github.com/khalidkhnz/2D-metaverse-app/backend/controllers/role"
+	spaceController "github.com/khalidkhnz/2D-metaverse-app/backend/controllers/space"
 	"github.com/khalidkhnz/2D-metaverse-app/backend/lib"
 	"github.com/khalidkhnz/2D-metaverse-app/backend/middlewares"
 )
@@ -53,9 +54,15 @@ func (s *APIServer) PermissionRouter(router *mux.Router){
 }
 
 
-func (s *APIServer) OrganizationRouter(router *mux.Router) {
-	// router.HandleFunc("/org/signup", makeHTTPHandleFunc(authControllers.HandleCreateAccount)).Methods("POST")
-	// router.Handle("/org/current-user", middlewares.AuthMiddleware(makeHTTPHandleFunc(authControllers.HandleCurrentUser))).Methods("GET")
+func (s *APIServer) SpaceRouter(router *mux.Router) {
+	authRouter := router.PathPrefix("/space").Subrouter()
+	authRouter.Use(middlewares.AuthMiddleware)
+
+	authRouter.Handle("/create", makeHTTPHandleFunc(spaceController.HandleCreateSpace)).Methods("POST")
+	authRouter.Handle("/all", makeHTTPHandleFunc(spaceController.HandleGetAllSpaces)).Methods("GET")
+	authRouter.Handle("/get", makeHTTPHandleFunc(spaceController.HandleGetSpaceById)).Methods("GET")
+	authRouter.Handle("/my-spaces", makeHTTPHandleFunc(spaceController.HandleGetAllMySpaces)).Methods("GET")
+	authRouter.Handle("/search", makeHTTPHandleFunc(spaceController.HandleSearchSpaces)).Methods("GET")
 }
 
 func (s *APIServer) PublicRouter(router *mux.Router) {

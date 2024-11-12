@@ -102,7 +102,7 @@ func (s *APIServer) Run(runOptions RunOptions)  {
 	s.AuthRouter(apiRouter)
 	s.RoleRouter(apiRouter)
 	s.PermissionRouter(apiRouter)
-	s.OrganizationRouter(apiRouter)
+	s.SpaceRouter(apiRouter)
 
 	if(runOptions.EnableProxyServer){
 		fmt.Println("Starting Proxy Server...")

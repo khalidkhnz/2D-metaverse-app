@@ -1,0 +1,31 @@
+
+
+
+
+### CREATE SPACE
+POST http://localhost:4000/api/v1/space/create HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzIwNDI0MTMsInVzZXJJRCI6IjY3MzA3MDJlZGUwMDVkYmI4ZTIxN2NjOCJ9.mA3-92mGLM0yCe-igWeqDvPDtQOZL4o0ztilcOuWV6I
+Content-Type: application/json
+
+{
+    "name": "NEW SPACE",
+}
+
+
+### GET ALL SPACES
+GET http://localhost:4000/api/v1/space/all HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzIwNDI0MTMsInVzZXJJRCI6IjY3MzA3MDJlZGUwMDVkYmI4ZTIxN2NjOCJ9.mA3-92mGLM0yCe-igWeqDvPDtQOZL4o0ztilcOuWV6I
+
+
+### GET SPACES BY ID
+GET http://localhost:4000/api/v1/space/get?id=6733a0bb66ca75c567d53edf HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzIwNDI0MTMsInVzZXJJRCI6IjY3MzA3MDJlZGUwMDVkYmI4ZTIxN2NjOCJ9.mA3-92mGLM0yCe-igWeqDvPDtQOZL4o0ztilcOuWV6I
+
+### GET ALL MY SPACE
+GET http://localhost:4000/api/v1/space/my-spaces HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzIwNDI0MTMsInVzZXJJRCI6IjY3MzA3MDJlZGUwMDVkYmI4ZTIxN2NjOCJ9.mA3-92mGLM0yCe-igWeqDvPDtQOZL4o0ztilcOuWV6I
+
+
+### SEARCH
+GET http://localhost:4000/api/v1/space/search?q=9 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzIwNDI0MTMsInVzZXJJRCI6IjY3MzA3MDJlZGUwMDVkYmI4ZTIxN2NjOCJ9.mA3-92mGLM0yCe-igWeqDvPDtQOZL4o0ztilcOuWV6I
