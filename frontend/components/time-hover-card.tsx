@@ -31,11 +31,11 @@ export default function TimeHoverCard({ className }: { className?: string }) {
     <HoverCard>
       <HoverCardTrigger
         className={cn(
-          "flex min-w-[200px] cursor-pointer items-center justify-center",
+          "mr-[50px] flex cursor-pointer items-center justify-center md:mr-[100px]",
           className,
         )}
       >
-        <span className="text-[1.9vw] font-light uppercase text-white">
+        <span className="text-[18px] font-light uppercase text-white md:text-[1.9vw]">
           {currentTime}
         </span>
       </HoverCardTrigger>

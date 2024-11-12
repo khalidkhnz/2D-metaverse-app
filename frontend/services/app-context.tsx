@@ -71,6 +71,7 @@ export function AppContextProvider({
         pointerEvents: "none",
         opacity: 0,
       });
+      router.push("/explore");
       Toast.success("Logged in successfully");
     }
     if (response && !response.success) {

@@ -25,6 +25,8 @@ const TimeHoverCard = dynamic(() => import("@/components/time-hover-card"), {
 });
 
 const Header = () => {
+  const { current_user } = useAppContext();
+
   const pathname = usePathname();
 
   return (
@@ -36,12 +38,16 @@ const Header = () => {
           .join(" ")
           .toUpperCase()}
       </h1>
-      <Image
-        className="aspect-square h-9 w-9 cursor-pointer"
-        src={Assets.SETTINGS}
-        alt="settings"
-      />
-      <AvatarDropDownMenu />
+      {current_user?.email && (
+        <>
+          <Image
+            className="aspect-square h-9 w-9 cursor-pointer"
+            src={Assets.SETTINGS}
+            alt="settings"
+          />
+          <AvatarDropDownMenu />
+        </>
+      )}
       <TimeHoverCard />
     </div>
   );
