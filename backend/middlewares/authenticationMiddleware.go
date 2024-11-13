@@ -72,7 +72,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		}
 
 		// Fetch user data from database
-		populatedUser, err := authService.GetPopulatedUserByUserId(userID)
+		populatedUser, err := authService.AggrigateUserByUserId(userID)
 		if err != nil {
 			w.WriteHeader(http.StatusUnauthorized)
 			json.NewEncoder(w).Encode(map[string]any{

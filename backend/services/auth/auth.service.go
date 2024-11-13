@@ -124,6 +124,77 @@ func GetUserByUserId(userID primitive.ObjectID) (*schema.AuthSchema, error) {
 	return &auth, nil
 }
 
+func AggrigateUserByUserId(userID primitive.ObjectID) (*types.AuthSchemaPopulated, error) {
+	pipeline := bson.A{
+		// Match the user by userID
+		bson.D{{Key: "$match", Value: bson.D{{Key: "_id", Value: userID}}}},
+		// Populate role by joining on "roles" collection
+		bson.D{
+			{Key: "$lookup", Value: bson.D{
+				{Key: "from", Value: "roles"},
+				{Key: "localField", Value: "roleId"},
+				{Key: "foreignField", Value: "_id"},
+				{Key: "as", Value: "role"},
+			}},
+		},
+		bson.D{{Key: "$unwind", Value: "$role"}}, // Optional if there's only one role per user
+		// Convert permissions (string ObjectIds) to actual ObjectIds
+		bson.D{
+			{Key: "$set", Value: bson.D{
+				{Key: "permissions", Value: bson.D{
+					{Key: "$map", Value: bson.D{
+						{Key: "input", Value: "$permissions"},
+						{Key: "as", Value: "permId"},
+						{Key: "in", Value: bson.D{{Key: "$toObjectId", Value: "$$permId"}}},
+					}},
+				}},
+			}},
+		},
+		// Populate permissions from the "permissions" collection
+		bson.D{
+			{Key: "$lookup", Value: bson.D{
+				{Key: "from", Value: "permissions"},
+				{Key: "localField", Value: "permissions"},
+				{Key: "foreignField", Value: "_id"},
+				{Key: "as", Value: "permissions"},
+			}},
+		},
+		// Populate profile by joining on "profiles" collection
+		bson.D{
+			{Key: "$lookup", Value: bson.D{
+				{Key: "from", Value: "profiles"},
+				{Key: "localField", Value: "_id"},
+				{Key: "foreignField", Value: "authId"},
+				{Key: "as", Value: "profile"},
+			}},
+		},
+		bson.D{{Key: "$unwind", Value: "$profile"}}, // Optional if there's only one profile per user
+	}
+	
+
+	// Execute the aggregation pipeline
+	userCursor, err := lib.Collections("auths").Aggregate(context.TODO(), pipeline)
+	if err != nil {
+		return &types.AuthSchemaPopulated{}, err
+	}
+	defer userCursor.Close(context.TODO())
+
+	// Decode the result into the custom populated schema
+	var populatedAuth types.AuthSchemaPopulated
+	if userCursor.Next(context.TODO()) {
+		if err := userCursor.Decode(&populatedAuth); err != nil {
+			return &types.AuthSchemaPopulated{}, err
+		}
+	}
+
+	if err := userCursor.Err(); err != nil {
+		return &types.AuthSchemaPopulated{}, err
+	}
+
+	return &populatedAuth, nil
+}
+
+
 
 func GetPopulatedUserByUserId(userID primitive.ObjectID) (*types.AuthSchemaPopulated, error) {
 	// Get the "auths" collection

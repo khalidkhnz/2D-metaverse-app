@@ -6,6 +6,7 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/khalidkhnz/2D-metaverse-app/backend/types"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func WriteJSON(w http.ResponseWriter, status int, v any) error {
@@ -62,3 +63,12 @@ func Contains(slice []string, item string) bool {
 	}
 	return false
 }
+
+
+var ObjectIDFromHex = func(hex string) (primitive.ObjectID, error) {
+	objectID, err := primitive.ObjectIDFromHex(hex)
+	if err != nil {
+	  return primitive.NilObjectID,err
+	}
+	return objectID,nil
+  }
