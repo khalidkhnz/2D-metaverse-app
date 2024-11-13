@@ -1,14 +1,10 @@
-
-
-
-
 ### CREATE SPACE
 POST http://localhost:4000/api/v1/space/create HTTP/1.1
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzIwNDI0MTMsInVzZXJJRCI6IjY3MzA3MDJlZGUwMDVkYmI4ZTIxN2NjOCJ9.mA3-92mGLM0yCe-igWeqDvPDtQOZL4o0ztilcOuWV6I
 Content-Type: application/json
 
 {
-    "name": "NEW SPACE",
+    "name": "9000 POWER LEVEL"
 }
 
 
@@ -27,5 +23,5 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzIwNDI0M
 
 
 ### SEARCH
-GET http://localhost:4000/api/v1/space/search?q=9 HTTP/1.1
+GET http://localhost:4000/api/v1/space/search?q=9000%20POWER%20LEVEL HTTP/1.1
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzIwNDI0MTMsInVzZXJJRCI6IjY3MzA3MDJlZGUwMDVkYmI4ZTIxN2NjOCJ9.mA3-92mGLM0yCe-igWeqDvPDtQOZL4o0ztilcOuWV6I

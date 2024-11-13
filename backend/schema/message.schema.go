@@ -25,8 +25,14 @@ func (r *MessageSchema) Validate() error {
 	if r.ConversationId.String() == "" {
 		return errors.New("missing required field: conversationId")
 	}
-	if r.From.String() == "" {
+	if r.From.IsZero() {
 		return errors.New("missing required field: from")
+	}
+	if r.Mentions == nil {
+		r.Mentions = []primitive.ObjectID{}
+	}
+	if r.Attachments == nil {
+		r.Attachments = []string{}
 	}
 	return nil
 }

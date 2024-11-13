@@ -39,10 +39,10 @@ func (a *AuthSchema) Validate() error {
 	if a.RoleId.IsZero() {
 		return errors.New("missing required field: roleId")
 	}
-	if a.Permissions == nil {
-		return errors.New("missing field permissions Array")
+	if len(a.Permissions) == 0 {
+		a.Permissions = []primitive.ObjectID{}
 	}
-	if a.SpaceIds == nil {
+	if len(a.SpaceIds) == 0 {
 		a.SpaceIds = []primitive.ObjectID{}
 	}
 	return nil

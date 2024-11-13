@@ -76,3 +76,16 @@
 .test {
   border: 2px solid purple;
 }
+
+.hide_scrollbar {
+  overflow: auto; /* Allow scrolling */
+
+  /* For Firefox */
+  scrollbar-width: none; /* Hide scrollbar */
+
+  /* For WebKit-based browsers (Chrome, Safari) */
+  -webkit-overflow-scrolling: touch;
+}
+.hide_scrollbar::-webkit-scrollbar {
+  display: none; /* Hide scrollbar for Chrome, Safari, and other WebKit browsers */
+}

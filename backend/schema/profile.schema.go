@@ -22,7 +22,7 @@ type ProfileSchema struct {
 }
 
 func (p *ProfileSchema) Validate() error {
-	if p.AuthID == primitive.NilObjectID {
+	if p.AuthID.IsZero() {
 		return errors.New("missing required field: authId")
 	}
 	if p.FullName == "" {
