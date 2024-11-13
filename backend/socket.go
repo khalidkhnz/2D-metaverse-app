@@ -12,11 +12,24 @@ import (
 	"github.com/khalidkhnz/2D-metaverse-app/backend/types"
 )
 
+var allowedOrigins = []string{
+	"http://localhost:4000",
+	"http://localhost:3000",
+	"http://127.0.0.1:4000",
+	"http://127.0.0.1:3000",
+}
+
 var Upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
 	CheckOrigin: func(r *http.Request) bool {
-		return r.Header.Get("Origin") == "http://localhost:4000" || r.Header.Get("Origin") == "http://localhost:3000" || r.Header.Get("Origin") == "http://127.0.0.1:4000" || r.Header.Get("Origin") == "http://127.0.0.1:3000"
+		origin := r.Header.Get("Origin")
+		for _, allowedOrigin := range allowedOrigins {
+			if origin == allowedOrigin {
+				return true
+			}
+		}
+		return false
 	},
 }
 
