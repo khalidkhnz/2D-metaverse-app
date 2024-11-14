@@ -11,8 +11,8 @@ type ChannelSchema struct {
 	ID             primitive.ObjectID   `bson:"_id,omitempty" json:"_id"`
 	Name           string               `bson:"name" json:"name"`
 	Description    string               `bson:"description" json:"description"`
-	SpaceId        primitive.ObjectID   `bson:"spaceId" json:"spaceId"`
 	Logo           string               `bson:"logo" json:"logo"`
+	SpaceId        primitive.ObjectID   `bson:"spaceId" json:"spaceId"`
 	CreatorId      primitive.ObjectID   `bson:"creatorId" json:"creatorId"`
 	MemberIds      []primitive.ObjectID `bson:"memberIds" json:"memberIds"`
 	ConversationId primitive.ObjectID   `bson:"conversationId" json:"conversationId"`
@@ -23,9 +23,6 @@ type ChannelSchema struct {
 func (r *ChannelSchema) Validate() error {
 	if r.Name == "" {
 		return errors.New("missing required field: name")
-	}
-	if r.Description == "" {
-		return errors.New("missing required field: description")
 	}
 	if r.CreatorId.IsZero() {
 		return errors.New("missing required field: creatorId")

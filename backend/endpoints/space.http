@@ -1,6 +1,6 @@
 ### CREATE SPACE
 POST http://localhost:4000/api/v1/space/create HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzIwNDI0MTMsInVzZXJJRCI6IjY3MzA3MDJlZGUwMDVkYmI4ZTIxN2NjOCJ9.mA3-92mGLM0yCe-igWeqDvPDtQOZL4o0ztilcOuWV6I
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzIxNjQ1NzYsInVzZXJJRCI6IjY3MzU3OGVkOTRkZGE0NDQ2MTVkNWY2NiJ9.AwDoa26q8Vghg59uz7WWl5k4GTnCwdslLiTCMODKL10
 Content-Type: application/json
 
 {

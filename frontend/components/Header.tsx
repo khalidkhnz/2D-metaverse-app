@@ -32,11 +32,15 @@ const Header = () => {
   return (
     <div className="absolute left-0 top-0 z-50 flex h-fit w-full items-center justify-end gap-8 bg-transparent py-2">
       <h1 className="ml-[30px] mr-auto cursor-pointer text-[28px] font-light text-white">
-        {pathname
-          .split("/")
-          .map((i) => i.trim())
-          .join(" ")
-          .toUpperCase()}
+        {pathname.split("/").length <= 2 &&
+          pathname
+            .split("/")
+            .map((i) => i.trim())
+            .join(" ")
+            .split("-")
+            .map((i) => i.trim())
+            .join(" ")
+            .toUpperCase()}
       </h1>
       {current_user?.email && (
         <>
