@@ -20,11 +20,7 @@ import { BODY } from "@/lib/Forms";
 import { IUser } from "@/types/user";
 import { useRouter } from "next/navigation";
 import AioIcon from "@/components/aio-icon";
-
-interface IStateImageType {
-  result: string | ArrayBuffer | null | undefined;
-  file: File | null;
-}
+import { IStateImageType } from "@/types/other";
 
 export default function HomePage() {
   const { current_user } = useAppContext();

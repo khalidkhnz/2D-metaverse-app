@@ -21,7 +21,7 @@ export const BODY = {
   SPACE: {
     CREATE_SPACE: (name?: string) => {
       return {
-        name: "",
+        name: name || "",
       };
     },
   },
