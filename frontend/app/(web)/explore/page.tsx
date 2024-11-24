@@ -1,7 +1,6 @@
 "use client";
 
 import Loader from "@/components/loader";
-import { Input } from "@/components/ui/input";
 import { SpaceService } from "@/services/api/space.service";
 import { useQuery } from "@tanstack/react-query";
 import gsap from "gsap";
