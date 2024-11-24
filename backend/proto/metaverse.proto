@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package metaverse;
+option go_package = "backend/proto";
+
+// Position represents a player's position in the 2D world
+message Position {
+  float x = 1;
+  float y = 2;
+}
+
+// Player represents a player in the metaverse
+message Player {
+  string id = 1;
+  Position position = 2;
+}
+
+// UpdatePositionRequest is sent by clients to update their position
+message UpdatePositionRequest {
+  string player_id = 1;
+  Position position = 2;
+}
+
+// UpdatePositionResponse contains the updated state
+message UpdatePositionResponse {
+  repeated Player players = 1;
+}
+
+// MetaverseService defines the gRPC service
+service MetaverseService {
+  // UpdatePosition updates a player's position and returns the current state
+  rpc UpdatePosition(UpdatePositionRequest) returns (UpdatePositionResponse) {}
+  
+  // StreamState allows clients to receive real-time updates
+  rpc StreamState(UpdatePositionRequest) returns (stream UpdatePositionResponse) {}
+}
